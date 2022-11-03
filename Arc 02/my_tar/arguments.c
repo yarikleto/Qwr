@@ -79,7 +79,14 @@ bool is_arg_flag(char* arg_value) {
 }
 
 int validate_arguments(arguments_t* arguments, int argc) {
-  if (argc == 1) {
+  bool is_action_flag_included = (
+    arguments->create_flag
+    || arguments->append_flag
+    || arguments->update_flag
+    || arguments->extract_flag
+  );
+
+  if (argc == 1 || !is_action_flag_included) {
     print_message(STDERR_FILENO, "tar: Must specify one of -c, -r, -t, -u, -x\n");
     return 1;
   }
