@@ -1,32 +1,38 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "./hash-table.h"
 #include "./helpers.h"
+#include "./array.h"
 
 unsigned int calc_index(const char *s, unsigned int max);
-void free_node(Hash_Table_Node_str* node);
+void free_node(Hash_table_node* node);
 
-void Hash_Table__constructor(Hash_Table_str* this, unsigned int size) {
-  this->SIZE = size;
-  this->nodes = malloc(sizeof(Hash_Table_Node_str*) * size);
+Hash_table* create_hash_table(unsigned int size) {
+  Hash_table* hash_table = malloc(sizeof(Hash_table));
+  hash_table->SIZE = size;
+  hash_table->nodes = malloc(sizeof(Hash_table_node*) * size);
   for (unsigned int i = 0; i < size; ++i) {
-    this->nodes[i] = NULL;
+    hash_table->nodes[i] = NULL;
   }
+
+  return hash_table;
 }
 
-void Hash_Table__destructor(Hash_Table_str* this) {
+void Hash_table__free(Hash_table* this) {
   for (unsigned int i = 0; i < this->SIZE; ++i) {
     free_node(this->nodes[i]);
   }
 
   free(this->nodes);
+  free(this);
 }
 
-void* Hash_Table__get(Hash_Table_str* this, char* key) {
+void* Hash_table__get(Hash_table* this, char* key) {
   unsigned int index = calc_index(key, this->SIZE);
 
-  Hash_Table_Node_str* node = this->nodes[index];
+  Hash_table_node* node = this->nodes[index];
   while (node) {
     if (is_equal_strings(node->key, key)) {
       return node->value;
@@ -37,12 +43,38 @@ void* Hash_Table__get(Hash_Table_str* this, char* key) {
   return NULL;
 }
 
-Hash_Table_Set_Codes_e Hash_Table__set(Hash_Table_str* this, char* key, void* value) {
+void Hash_table__print_keys(Hash_table* this) {
+  for (unsigned int i = 0; i < this->SIZE; ++i) {
+    Hash_table_node* node = this->nodes[i];
+    while (node) {
+      print_message(STDOUT_FILENO, "Key: ");
+      print_message(STDOUT_FILENO, node->key);
+      print_message(STDOUT_FILENO, "\n");
+      node = node->next;
+    }
+  }
+}
+
+Array* Hash_table__keys(Hash_table* this) {
+  Array* keys = create_array();
+
+  for (unsigned int i = 0; i < this->SIZE; ++i) {
+    Hash_table_node* node = this->nodes[i];
+    while (node) {
+      Array__push(keys, node->key);
+      node = node->next;
+    }
+  }
+
+  return keys;
+}
+
+hash_table_set_codes_e Hash_table__set(Hash_table* this, char* key, void* value) {
   unsigned int index = calc_index(key, this->SIZE);
-  Hash_Table_Node_str* node = this->nodes[index];
+  Hash_table_node* node = this->nodes[index];
 
   if (node == NULL) {
-    node = malloc(sizeof(Hash_Table_Node_str));
+    node = malloc(sizeof(Hash_table_node));
     if (node == NULL) return HASH_TABLE_SET_ERROR;
     node->key = key;
     this->nodes[index] = node;
@@ -70,7 +102,7 @@ unsigned int calc_index(const char *s, unsigned int max) {
   return index;
 }
 
-void free_node(Hash_Table_Node_str* node) {
+void free_node(Hash_table_node* node) {
   if (node == NULL) return;
 
   free_node(node->next);

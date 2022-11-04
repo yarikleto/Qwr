@@ -34,7 +34,7 @@ Can't specify both -u and -c
 ```text
 tar: Can't specify both -r and -c
 ```
-- [ ] `my_tar test -c -f kek.tar`
+- [x] `my_tar test -c -f kek.tar`
 
 ```text
 Usage:
@@ -53,3 +53,11 @@ tar: Must specify one of -c, -r, -t, -u, -x
 tar: no files or directories specified
 ```
 - [x] `my_tar -cf kek.tar my_tar` -> **VALID**
+- [x] `my_tar -c -f kek.tar -f`
+```text
+tar: Option -f requires an argument
+Usage:
+  List:    tar -tf <archive-filename>
+  Extract: tar -xf <archive-filename>
+  Create:  tar -cf <archive-filename> [filenames...]
+```

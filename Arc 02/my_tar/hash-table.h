@@ -1,10 +1,12 @@
-#ifndef HASH_TABLE_NODE_STR
-#define HASH_TABLE_NODE_STR
+#include "./array.h"
+
+#ifndef HASH_TABLE_NODE
+#define HASH_TABLE_NODE
 typedef struct hash_table_node {
   char* key;
   void* value;
   struct hash_table_node* next;
-} Hash_Table_Node_str;
+} Hash_table_node;
 #endif
 
 #ifndef HASH_TABLE_SET_CODES_E
@@ -12,18 +14,20 @@ typedef struct hash_table_node {
 typedef enum {
   HASH_TABLE_SET_SUCCESS,
   HASH_TABLE_SET_ERROR
-} Hash_Table_Set_Codes_e;
+} hash_table_set_codes_e;
 #endif
 
-#ifndef HASH_TABLE_STR
-#define HASH_TABLE_STR
+#ifndef HASH_TABLE
+#define HASH_TABLE
 typedef struct {
-    Hash_Table_Node_str** nodes;
+    Hash_table_node** nodes;
     unsigned int SIZE;
-} Hash_Table_str;
+} Hash_table;
 #endif
 
-void Hash_Table__constructor(Hash_Table_str* self, unsigned int size);
-void Hash_Table__destructor(Hash_Table_str* self);
-void* Hash_Table__get(Hash_Table_str* self, char* key);
-Hash_Table_Set_Codes_e Hash_Table__set(Hash_Table_str* self, char* key, void* value);
+Hash_table* create_hash_table(unsigned int size);
+void Hash_table__free(Hash_table* self);
+void* Hash_table__get(Hash_table* self, char* key);
+hash_table_set_codes_e Hash_table__set(Hash_table* self, char* key, void* value);
+void Hash_table__print_keys(Hash_table* this);
+Array* Hash_table__keys(Hash_table* this);

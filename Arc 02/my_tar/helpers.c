@@ -14,32 +14,11 @@ int get_str_length(const char *str) {
   return i;
 }
 
-void print_message(int file_descriptor, char* message) {
+void print_message(int file_descriptor, string_t message) {
   write(file_descriptor, message, get_str_length(message));
 }
 
-void push_to_str_arr(array_of_str_t* str_arr, char* str) {
-  int new_size = str_arr->size + 1;
-  char** result = malloc(sizeof(char**) * new_size);
-  int i = 0;
-  for (; i < str_arr->size; ++i) {
-    result[i] = str_arr->items[i];
-  }
-  result[i] = str;
-
-  free_str_arr(str_arr);
-  str_arr->items = result;
-  str_arr->size = new_size;
-}
-
-void free_str_arr(array_of_str_t* str_arr) {
-  str_arr->size = 0;
-  if (str_arr->items == NULL) return;
-  free(str_arr->items);
-  str_arr->items = NULL;
-}
-
-bool is_equal_strings(char* str1, char* str2) {
+bool is_equal_strings(string_t str1, string_t str2) {
   int i = 0;
   while (true) {
     if (str1[i] == '\0' && str2[i] == '\0') return true;
@@ -48,7 +27,7 @@ bool is_equal_strings(char* str1, char* str2) {
   }
 }
 
-char* get_string_copy(char* src) {
+string_t get_string_copy(string_t src) {
   int length = get_str_length(src);
 
   char* result = malloc(sizeof(char) * (length + 1));
@@ -59,4 +38,21 @@ char* get_string_copy(char* src) {
   }
 
   return result;
+}
+
+string_t concat_chars(char a, char b) {
+  string_t str = malloc(sizeof(char) * 3);
+  str[0] = a;
+  str[1] = b;
+  str[2] = '\0';
+
+  return str;
+}
+
+bool is_char_included(string_t str, char c) {
+  for (int i = 0; str[i]; ++i) {
+    if (str[i] == c) return true;
+  }
+
+  return false;
 }

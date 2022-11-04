@@ -4,11 +4,15 @@
 
 #include "./arguments.h"
 #include "./helpers.h"
+#include "./array.h"
 
 bool is_arg_flag(char* arg_value);
+void print_usage_message();
 
 arguments_t* parse_arguments(int argc, char** argv) {
   arguments_t* arguments = malloc(sizeof(arguments_t));
+  arguments->included_files = create_array();
+  arguments->exit_code = ARGUMENTS_EXIT_CODE__SUCCESS;
 
   // Init default values
   arguments->create_flag = false;
@@ -17,22 +21,27 @@ arguments_t* parse_arguments(int argc, char** argv) {
   arguments->update_flag = false;
   arguments->extract_flag = false;
   arguments->output_file_flag = NULL;
-  arguments->included_files.size = 0;
-  arguments->included_files.items = NULL;
 
+  char active_flag = '\0';
   for (int arg_index = 1; arg_index < argc; ++arg_index) {
     char* arg_value = argv[arg_index];
     bool is_flag = is_arg_flag(arg_value);
 
+    if (!is_flag && !active_flag) {
+      arguments->exit_code = ARGUMENTS_EXIT_CODE__INVALID_FLAG;
+      return arguments;
+    }
+
     if (!is_flag) {
-      push_to_str_arr(&arguments->included_files, arg_value);
+      Array__push(arguments->included_files, arg_value);
       continue;
     }
 
-    free_str_arr(&arguments->included_files);
+    Array__clear(arguments->included_files);
 
     for (int i = 1; arg_value[i]; ++i) {
       char flag = arg_value[i];
+      active_flag = flag;
       if (flag == 'c') {
         arguments->create_flag = true;
         continue;
@@ -70,12 +79,19 @@ arguments_t* parse_arguments(int argc, char** argv) {
 }
 
 void free_arguments(arguments_t* arguments) {
-  free_str_arr(&arguments->included_files);
+  Array__free(arguments->included_files);
   free(arguments);
 }
 
 bool is_arg_flag(char* arg_value) {
   return arg_value[0] == '-';
+}
+
+void print_usage_message() {
+  print_message(STDERR_FILENO, "Usage:\n");
+  print_message(STDERR_FILENO, "  List:    tar -tf <archive-filename>\n");
+  print_message(STDERR_FILENO, "  Extract: tar -xf <archive-filename>\n");
+  print_message(STDERR_FILENO, "  Create:  tar -cf <archive-filename> [filenames...]\n");
 }
 
 int validate_arguments(arguments_t* arguments, int argc) {
@@ -85,6 +101,17 @@ int validate_arguments(arguments_t* arguments, int argc) {
     || arguments->update_flag
     || arguments->extract_flag
   );
+
+  if (arguments->exit_code == ARGUMENTS_EXIT_CODE__INVALID_FLAG) {
+    print_usage_message();
+    return 1;
+  }
+
+  if (arguments->output_file_flag != NULL && get_str_length(arguments->output_file_flag) == 0) {
+    print_message(STDERR_FILENO, "tar: Option -f requires an argument\n");
+    print_usage_message();
+    return 1;
+  }
 
   if (argc == 1 || !is_action_flag_included) {
     print_message(STDERR_FILENO, "tar: Must specify one of -c, -r, -t, -u, -x\n");
@@ -105,11 +132,12 @@ int validate_arguments(arguments_t* arguments, int argc) {
       return 1;
     }
 
-    if (arguments->included_files.size == 0) {
+    if (arguments->included_files->size == 0) {
       print_message(STDERR_FILENO, "tar: no files or directories specified\n");
       return 1;
     }
   }
+
   if (arguments->append_flag) {
     if (arguments->update_flag) {
       print_message(STDERR_FILENO, "tar: Can't specify both -u and -r\n");
@@ -120,6 +148,7 @@ int validate_arguments(arguments_t* arguments, int argc) {
       return 1;
     }
   }
+
   if (arguments->update_flag) {
     if (arguments->extract_flag) {
       print_message(STDERR_FILENO, "tar: Can't specify both -x and -u\n");
@@ -127,9 +156,5 @@ int validate_arguments(arguments_t* arguments, int argc) {
     }
   }
 
-  if (arguments->output_file_flag != NULL && get_str_length(arguments->output_file_flag) == 0) {
-    print_message(STDERR_FILENO, "tar: Option -f requires an argument\n");
-    return 1;
-  }
   return 0;
 }

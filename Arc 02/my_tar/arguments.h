@@ -1,6 +1,13 @@
-#include <stdbool.h>
-
 #include "./helpers.h"
+#include "./array.h"
+
+#ifndef ARGUMENTS_EXIT_CODE_E
+#define ARGUMENTS_EXIT_CODE_E
+typedef enum {
+  ARGUMENTS_EXIT_CODE__SUCCESS,
+  ARGUMENTS_EXIT_CODE__INVALID_FLAG
+} arguments_exit_code_e;
+#endif
 
 #ifndef ARGUMENTS_T
 #define ARGUMENTS_T
@@ -19,14 +26,14 @@ typedef struct {
   // earlier copies.
   bool extract_flag; // -x
   // Read the archive from or write the archive to the specified file. The filename can be standard input or standard output.
-  char* output_file_flag; // -f
+  string_t output_file_flag; // -f
 
-  array_of_str_t included_files;
+  Array* included_files;
+
+  arguments_exit_code_e exit_code;
 } arguments_t;
 #endif
 
-
-
-arguments_t* parse_arguments(int argc, char** argv);
+arguments_t* parse_arguments(int argc, string_t* argv);
 void free_arguments(arguments_t* arguments);
 int validate_arguments(arguments_t* arguments, int argc);
