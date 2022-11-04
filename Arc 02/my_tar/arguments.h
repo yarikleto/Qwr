@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include "./helpers.h"
 #include "./array.h"
 
