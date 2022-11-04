@@ -1,3 +1,8 @@
+#### Usage
+```bash
+make re && ./my_tar -cf kek.tar my_tar
+```
+
 #### Arguments' validation
 
 - [x] `my_tar`
@@ -60,4 +65,8 @@ Usage:
   List:    tar -tf <archive-filename>
   Extract: tar -xf <archive-filename>
   Create:  tar -cf <archive-filename> [filenames...]
+```
+- [x] `my_tar -x` **nonstandard**
+```text
+tar: Option -x also requires -f option
 ```

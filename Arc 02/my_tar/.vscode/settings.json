@@ -2,7 +2,8 @@
   "files.associations": {
     "stdio.h": "c",
     "stdlib.h": "c",
-    "unistd.h": "c"
+    "unistd.h": "c",
+    "arguments.h": "c"
   },
   "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }
