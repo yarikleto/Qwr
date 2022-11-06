@@ -1,9 +1,10 @@
-#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "./helpers.h"
+#include "./tar-file.h"
 
 int get_str_length(const char *str) {
   if (str == NULL) return 0;
@@ -55,4 +56,59 @@ bool is_char_included(string_t str, char c) {
   }
 
   return false;
+}
+
+bool is_block_empty(char* block) {
+  for (int i = 0; i < BLOCK_SIZE; ++i) {
+    if (block[i]) return false;
+  }
+
+  return true;
+}
+
+int my_pow(int n, int power) {
+  if (power == 0) return 1;
+
+  int result = n;
+  for (int i = 1; i < power; ++i) {
+    result *= n;
+  }
+
+  return result;
+}
+
+int oct_str_to_bytes(string_t str, int size) {
+  int n = 0;
+  char *c = str;
+  while (size > 1) {
+    size -= 1;
+    n *= 8;
+    n += *c - '0';
+    c++;
+  }
+
+  return n;
+}
+
+string_t concat_strings(string_t str1, string_t str2) {
+  int str1_length = get_str_length(str1);
+  int str2_length = get_str_length(str2);
+  int new_length = str1_length + str2_length;
+
+  string_t new_str = malloc(sizeof(char) * (new_length + 1));
+  if (!new_str) return NULL;
+
+  new_str[new_length] = '\0';
+
+  int result_index = 0;
+  for (int i = 0; i < str1_length; ++i, ++result_index) new_str[result_index] = str1[i];
+  for (int i = 0; i < str2_length; ++i, ++result_index) new_str[result_index] = str2[i];
+
+  return new_str;
+}
+
+void memory_copy(void* dest, void* src, int size) {
+  for (int i = 0; i < size; ++i) {
+    ((char*)dest)[i] = ((char*)src)[i];
+  }
 }

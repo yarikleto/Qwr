@@ -3,7 +3,10 @@
     "stdio.h": "c",
     "stdlib.h": "c",
     "unistd.h": "c",
-    "arguments.h": "c"
+    "arguments.h": "c",
+    "cmath": "c",
+    "complex": "c"
   },
-  "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
+  "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+  "C_Cpp.errorSquiggles": "disabled"
 }

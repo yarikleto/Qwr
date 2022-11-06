@@ -100,6 +100,7 @@ int validate_arguments(arguments_t* arguments, int argc) {
     || arguments->append_flag
     || arguments->update_flag
     || arguments->extract_flag
+    || arguments->list_flag
   );
 
   if (arguments->exit_code == ARGUMENTS_EXIT_CODE__INVALID_FLAG) {
@@ -120,38 +121,50 @@ int validate_arguments(arguments_t* arguments, int argc) {
 
   if (arguments->create_flag) {
     if (arguments->append_flag) {
-      print_message(STDERR_FILENO, "tar: Can't specify both -r and -c\n");
+      print_message(STDERR_FILENO, "tar: Can't specify more than one 'ctrux'\n");
       return 1;
     }
     if (arguments->update_flag) {
-      print_message(STDERR_FILENO, "tar: Can't specify both -u and -c\n");
+      print_message(STDERR_FILENO, "tar: Can't specify more than one 'ctrux'\n");
       return 1;
     }
     if (arguments->extract_flag) {
-      print_message(STDERR_FILENO, "tar: Can't specify both -x and -c\n");
+      print_message(STDERR_FILENO, "tar: Can't specify more than one 'ctrux'\n");
+      return 1;
+    }
+    if(arguments->list_flag) {
+      print_message(STDERR_FILENO, "tar: Can't specify more than one 'ctrux'\n");
       return 1;
     }
 
     if (arguments->included_files->size == 0) {
-      print_message(STDERR_FILENO, "tar: no files or directories specified\n");
+      print_message(STDERR_FILENO, "tar: Cowardly refusing to create an empty archive\n");
       return 1;
     }
   }
 
   if (arguments->append_flag) {
     if (arguments->update_flag) {
-      print_message(STDERR_FILENO, "tar: Can't specify both -u and -r\n");
+      print_message(STDERR_FILENO, "tar: Can't specify more than one 'ctrux'\n");
       return 1;
     }
     if (arguments->extract_flag) {
-      print_message(STDERR_FILENO, "tar: Can't specify both -x and -r\n");
+      print_message(STDERR_FILENO, "tar: Can't specify more than one 'ctrux'\n");
+      return 1;
+    }
+    if(arguments->list_flag) {
+      print_message(STDERR_FILENO, "tar: Can't specify more than one 'ctrux'\n");
       return 1;
     }
   }
 
   if (arguments->update_flag) {
     if (arguments->extract_flag) {
-      print_message(STDERR_FILENO, "tar: Can't specify both -x and -u\n");
+      print_message(STDERR_FILENO, "tar: Can't specify more than one 'ctrux'\n");
+      return 1;
+    }
+    if(arguments->list_flag) {
+      print_message(STDERR_FILENO, "tar: Can't specify more than one 'ctrux'\n");
       return 1;
     }
   }

@@ -8,7 +8,7 @@
     "request": "launch",
     "program": "${workspaceRoot}/${fileBasenameNoExtension}",
     "cwd": "${workspaceRoot}",
-    "args": ["hol"],
+    "args": ["-x", "-f", "test.tar"],
     "MIMode": "lldb"
   }]
 }
