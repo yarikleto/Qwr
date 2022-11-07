@@ -13,7 +13,7 @@ Array* create_array() {
 
 void Array__push(Array* this, void* value) {  
   int new_size = this->size + 1;
-  void** result = malloc(sizeof(void*) * new_size);
+  char** result = malloc(sizeof(char*) * new_size);
   int i = 0;
   for (; i < this->size; ++i) {
     result[i] = this->items[i];
