@@ -11,7 +11,7 @@ Array* create_array() {
   return array;
 }
 
-void Array__push(Array* this, void* value) {  
+void Array__push(Array* this, char* value) {  
   int new_size = this->size + 1;
   char** result = malloc(sizeof(char*) * new_size);
   int i = 0;
