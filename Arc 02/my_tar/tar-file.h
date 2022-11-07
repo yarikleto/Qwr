@@ -48,5 +48,5 @@ typedef struct Tar_file {
 
 Tar_file* create_tar_file();
 void Tar_file__free(Tar_file* self);
-int Tar_file__push_content(Tar_file* self, string_t str);
+int Tar_file__push_content(Tar_file* this, string_t content, int content_size);
 int Tar_file__get_file_type(Tar_file* self);

@@ -90,9 +90,8 @@ int oct_str_to_bytes(string_t str, int size) {
   return n;
 }
 
-string_t concat_strings(string_t str1, string_t str2) {
+string_t concat_strings(string_t str1, string_t str2, int str2_length) {
   int str1_length = get_str_length(str1);
-  int str2_length = get_str_length(str2);
   int new_length = str1_length + str2_length;
 
   string_t new_str = malloc(sizeof(char) * (new_length + 1));

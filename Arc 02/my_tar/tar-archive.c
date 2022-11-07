@@ -69,15 +69,12 @@ Tar_archive* read_archive(string_t filename) {
 
       int block_content_size = MIN(content_size_in_bytes - loaded_size_in_bytes, BLOCK_SIZE);
       loaded_size_in_bytes += block_content_size;
-      string_t chunk_of_content = get_str_slice(block, 0, block_content_size);
 
-      if (Tar_file__push_content(active_file, chunk_of_content) > 0) {
+      if (Tar_file__push_content(active_file, block, block_content_size) > 0) {
         print_message(STDOUT_FILENO, "my_tar: Unable to push content\n");
         close(file_descriptor);
-        free(chunk_of_content);
         return NULL;
       }
-      free(chunk_of_content);
     }
   }
 

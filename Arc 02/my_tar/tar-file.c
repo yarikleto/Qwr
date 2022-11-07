@@ -14,8 +14,8 @@ Tar_file* create_tar_file() {
   return tar_file;
 }
 
-int Tar_file__push_content(Tar_file* this, string_t str) {
-  string_t new_content = concat_strings(this->content, str);
+int Tar_file__push_content(Tar_file* this, string_t content, int content_size) {
+  string_t new_content = concat_strings(this->content, content, content_size);
   if (!new_content) return 1;
 
   if (this->content) free(this->content);
