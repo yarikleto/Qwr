@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g
-LDFLAGS =
+CFLAGS = -Wall -Wextra -Werror
+LDFLAGS = -g3 -fsanitize=address
 SRCS := $(wildcard *.c)
 BINS := $(SRCS:%.c=%)
 OBJFILES := $(BINS:%=%.o)
@@ -12,6 +12,6 @@ $(TARGET): $(OBJFILES)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJFILES) $(LDFLAGS)
 
 clean:
-	rm -rvf ${OBJFILES} ${BINS}
+	rm -rvf ${OBJFILES} 
 
-re: clean all
+re: all clean
