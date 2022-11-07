@@ -33,5 +33,5 @@ void Tar_file__free(Tar_file* this) {
 }
 
 int Tar_file__get_file_type(Tar_file* this) {
-  return this->header.type - '0';
+  return this->header.typeflag - '0';
 }

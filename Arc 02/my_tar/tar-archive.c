@@ -78,17 +78,17 @@ Tar_archive* read_archive(string_t filename) {
 
   // TODO: debug an archive
   // {
-  //   Tar_file* file = tar_archive->first_file;
+    Tar_file* file = tar_archive->first_file;
 
-  //   while (file) {
-  //     printf("Name: %s\n", file->header.name);
-  //     printf("Size: %d\n", oct_str_to_bytes(file->header.size, SIZE_OF_FIELD_SIZE));
-  //     printf("Content length: %d\n", get_str_length(file->content));
-  //     printf("Type: %d\n", Tar_file__get_file_type(file));
-  //     printf("Content: %s\n", file->content);
-  //     printf("------------------------\n");
-  //     file = file->next_file;
-  //   }
+    while (file) {
+      printf("Name: %s\n", file->header.name);
+      printf("Size: %d\n", oct_str_to_bytes(file->header.size, SIZE_OF_FIELD_SIZE));
+      printf("Content length: %d\n", get_str_length(file->content));
+      printf("Type: %d\n", Tar_file__get_file_type(file));
+      printf("Content: %s\n", file->content);
+      printf("------------------------\n");
+      file = file->next_file;
+    }
   // }
 
   return tar_archive;
