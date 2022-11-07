@@ -66,31 +66,38 @@ Tar_archive* read_archive(string_t filename) {
         close(file_descriptor);
         return NULL;
       }
-      loaded_size_in_bytes += BLOCK_SIZE;
 
-      if (Tar_file__push_content(active_file, block) > 0) {
+      int block_content_size = MIN(content_size_in_bytes - loaded_size_in_bytes, BLOCK_SIZE);
+      loaded_size_in_bytes += block_content_size;
+      string_t chunk_of_content = get_str_slice(block, 0, block_content_size);
+
+      if (Tar_file__push_content(active_file, chunk_of_content) > 0) {
         print_message(STDOUT_FILENO, "my_tar: Unable to push content\n");
         close(file_descriptor);
+        free(chunk_of_content);
         return NULL;
       }
+      free(chunk_of_content);
     }
   }
 
   // TODO: debug an archive
-  // {
-  //   Tar_file* file = tar_archive->first_file;
+  {
+    Tar_file* file = tar_archive->first_file;
 
-  //   while (file) {
-  //     printf("Name: %s\n", file->header.name);
-  //     printf("Size: %d\n", oct_str_to_bytes(file->header.size, SIZE_OF_FIELD_SIZE));
-  //     printf("Content length: %d\n", get_str_length(file->content));
-  //     printf("Type: %d\n", Tar_file__get_file_type(file));
-  //     printf("Content: %s\n", file->content);
-  //     printf("------------------------\n");
-  //     file = file->next_file;
-  //   }
-  // }
+    while (file) {
+      printf("------------------------\n");
+      printf("Name: %s\n", file->header.name);
+      printf("Size: %d\n", oct_str_to_bytes(file->header.size, SIZE_OF_FIELD_SIZE));
+      printf("Content length: %d\n", get_str_length(file->content));
+      printf("Type: %d\n", Tar_file__get_file_type(file));
+      printf("Content: %s\n", file->content);
+      printf("------------------------\n");
+      file = file->next_file;
+    }
+  }
 
+  close(file_descriptor);
   return tar_archive;
 }
 

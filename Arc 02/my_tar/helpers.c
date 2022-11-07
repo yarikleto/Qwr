@@ -6,7 +6,7 @@
 #include "./helpers.h"
 #include "./tar-file.h"
 
-int get_str_length(const char *str) {
+int get_str_length(const string_t str) {
   if (str == NULL) return 0;
 
   int i = 0;
@@ -111,4 +111,18 @@ void memory_copy(void* dest, void* src, int size) {
   for (int i = 0; i < size; ++i) {
     ((char*)dest)[i] = ((char*)src)[i];
   }
+}
+
+string_t get_str_slice(string_t str, int from, int to) {
+  if (from >= to) return NULL;
+
+  int new_size = to - from;
+  string_t new_str = malloc(sizeof(char) * (new_size + 1));
+  new_str[new_size] = '\0';
+
+  for (int i = 0; i < new_size; ++i) {
+    new_str[i] = str[i + from];
+  }
+
+  return new_str;
 }
