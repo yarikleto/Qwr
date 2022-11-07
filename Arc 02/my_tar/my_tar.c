@@ -27,7 +27,5 @@ int main (int argc, char** argv) {
   if (arguments->extract_flag) {
     Tar_archive* tar_archive = read_archive(arguments->output_file_flag);
     if (tar_archive == NULL) return 1;
-
-    
   }
 }
