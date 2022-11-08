@@ -12,13 +12,14 @@ int main (int argc, char** argv) {
   if (validate_arguments(arguments, argc) > 0) return 1;
 
   //Debug printf's
-  printf("Arguments size: %d\n", arguments->included_files->size);
-  if(arguments->included_files->items != NULL){
-    for(int i = 0; arguments->included_files->items[i] != NULL;i++) {
-      printf("%s\n", arguments->included_files->items[i]);
-    }
-  }
+  // printf("Arguments size: %d\n", arguments->included_files->size);
+  // if(arguments->included_files->items != NULL){
+  //   for(int i = 0; arguments->included_files->items[i] != NULL;i++) {
+  //     printf("%s\n", arguments->included_files->items[i]);
+  //   }
+  // }
 
+  //Tar mode: -c create a new archive
   if (arguments->create_flag) {
     int file_descriptor = STDOUT_FILENO;
     if (arguments->output_file_flag) {
@@ -35,6 +36,7 @@ int main (int argc, char** argv) {
     if (file_descriptor != STDOUT_FILENO) close(file_descriptor);
   }
 
+  //Tar mode: -x extract from the archive
   if (arguments->extract_flag) {
     Tar_archive* tar_archive = read_archive(arguments->output_file_flag);
     if (tar_archive == NULL) {
