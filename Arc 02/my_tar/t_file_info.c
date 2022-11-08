@@ -53,30 +53,28 @@ file_info get_file_info(file_info this, char *filename) {
     printf("Unable to get file properties\n");
   }
   else {
-    printf("filename: %d\n", filestat.st_mode);
+    this->mode = filestat.st_mode;
+    printf("file mode: %ld\n", this->mode);
   }
   return this;
 }
 
 ////main function for testing above functions
-// int main(int argc, char **argv) {
+int main(int argc, char **argv) {
 
-//   //Test t_file_constructor and t_file_initialize
-//   file_info file_1 = t_file_constructor();
-//   t_file_initialize(file_1);
+  //Test t_file_constructor and t_file_initialize
+  file_info file_1 = t_file_constructor();
+  t_file_initialize(file_1);
 
-//   //Test get_file_info
-//   if(argc > 1) {
-//     printf("%s\n", argv[1]);
-//     file_1 = get_file_info(file_1, argv[1]);
-//     if(file_1->name == NULL) {
-//       printf("file name: %s\n", file_1->name);
-//     }
-//   }
-//   else {
-//     printf("No inputs, skipping get_file_info test\n");
-//   }
+  //Test get_file_info
+  if(argc > 1) {
+    printf("%s\n", argv[1]);
+    file_1 = get_file_info(file_1, argv[1]);
+  }
+  else {
+    printf("No inputs, skipping get_file_info test\n");
+  }
   
-//   t_file_destructor(file_1);
-//   return 0;
-// }
+  t_file_destructor(file_1);
+  return 0;
+}
