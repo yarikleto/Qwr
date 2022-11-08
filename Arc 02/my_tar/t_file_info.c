@@ -22,7 +22,6 @@ int t_file_destructor(file_info this) {
   free(this->uname);
   free(this->gname);
   free(this->prefix);
-  free(this->pad);
   free(this);
 
   if(this != NULL) {
@@ -50,7 +49,6 @@ int t_file_initialize(file_info this) {
   this->devmajor = 0;
   this->devminor = 0;
   this->prefix = malloc(155 * sizeof(char));
-  this->pad = malloc(12 * sizeof(char));
   return 0;
 }
 
@@ -68,30 +66,29 @@ file_info get_file_info(file_info this, char *filename) {
 }
 
 ////main function for testing above functions
-int main(int argc, char **argv) {
+// int main(int argc, char **argv) {
 
+//   //Test t_file_constructor and t_file_initialize
+//   file_info file_1 = t_file_constructor();
+//   t_file_initialize(file_1);
 
-  //Test t_file_constructor and t_file_initialize
-  file_info file_1 = t_file_constructor();
-  t_file_initialize(file_1);
-
-  //Test get_file_info
-  if(argc > 1) {
-    printf("%s\n", argv[1]);
-    file_1 = get_file_info(file_1, argv[1]);
-    printf("file name: %s\n", file_1->name);
-  }
-  else {
-    printf("No inputs, skipping get_file_info test\n");
-  }
+//   //Test get_file_info
+//   if(argc > 1) {
+//     printf("%s\n", argv[1]);
+//     file_1 = get_file_info(file_1, argv[1]);
+//     printf("file name: %s\n", file_1->name);
+//   }
+//   else {
+//     printf("No inputs, skipping get_file_info test\n");
+//   }
   
-  //Test t_file_destructor
-  if(t_file_destructor(file_1) == 1) {
-    printf("Not everything freed\n");
-  }
-  else {
-    printf("Everything free!\n");
-  }
+//   //Test t_file_destructor
+//   if(t_file_destructor(file_1) == 1) {
+//     printf("Not everything freed\n");
+//   }
+//   else {
+//     printf("Everything free!\n");
+//   }
 
-  return 0;
-}
+//   return 0;
+// }
