@@ -5,7 +5,13 @@
     "unistd.h": "c",
     "arguments.h": "c",
     "cmath": "c",
-    "complex": "c"
+    "complex": "c",
+    "__config": "c",
+    "__string": "c",
+    "__undef_macros": "c",
+    "memory": "c",
+    "algorithm": "c",
+    "new": "c"
   },
   "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
   "C_Cpp.errorSquiggles": "disabled"

@@ -113,9 +113,18 @@ void memory_copy(void* dest, void* src, int size) {
 }
 
 string_t get_str_slice(string_t str, int from, int to) {
-  if (from >= to) return NULL;
+  int str_length = get_str_length(str);
 
-  int new_size = to - from;
+  if (from < 0) from = 0;
+  if (to > str_length - 1) to = str_length - 1;
+
+  int new_size;
+  if (from > to) {
+    new_size = 0;
+  } else {
+    new_size = to - from;
+  }
+
   string_t new_str = malloc(sizeof(char) * (new_size + 1));
   new_str[new_size] = '\0';
 

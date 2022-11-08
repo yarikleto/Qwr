@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "./arguments.h"
 #include "./helpers.h"
@@ -36,7 +37,11 @@ int main (int argc, char** argv) {
     Tar_archive* tar_archive = read_archive(arguments->output_file_flag);
     if (tar_archive == NULL) return 1;
 
-    // TODO: debug an archive
+    // !!!! For the debug purpose
+    // int file_descriptor = open("saved-debug-archive.tar", O_WRONLY | O_TRUNC | O_CREAT | S_IRUSR | S_IWUSR);
+    // Tar_archive__save(tar_archive, file_descriptor);
+
+    // !!!! For the debug purpose
     // {
     //   Tar_file* file = tar_archive->first_file;
 
