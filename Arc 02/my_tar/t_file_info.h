@@ -23,7 +23,7 @@ typedef struct t_file_info {
 typedef t_file_info *file_info;
 
 file_info t_file_constructor(void);
-int t_file_destructor(file_info this);
+void t_file_destructor(file_info this);
 file_info get_file_info(file_info this, char *filename);
 
 //Initialize t_file_info variables

@@ -13,7 +13,7 @@ file_info t_file_constructor(void) {
   return file_ptr;
 }
 
-int t_file_destructor(file_info this) {
+void t_file_destructor(file_info this) {
   free(this->name);
   free(this->typeflag);
   free(this->linkname);
@@ -23,13 +23,6 @@ int t_file_destructor(file_info this) {
   free(this->gname);
   free(this->prefix);
   free(this);
-
-  if(this != NULL) {
-    return 0;
-  }
-  else {
-    return 1;
-  }
 }
 
 int t_file_initialize(file_info this) {
@@ -76,19 +69,14 @@ file_info get_file_info(file_info this, char *filename) {
 //   if(argc > 1) {
 //     printf("%s\n", argv[1]);
 //     file_1 = get_file_info(file_1, argv[1]);
-//     printf("file name: %s\n", file_1->name);
+//     if(file_1->name == NULL) {
+//       printf("file name: %s\n", file_1->name);
+//     }
 //   }
 //   else {
 //     printf("No inputs, skipping get_file_info test\n");
 //   }
   
-//   //Test t_file_destructor
-//   if(t_file_destructor(file_1) == 1) {
-//     printf("Not everything freed\n");
-//   }
-//   else {
-//     printf("Everything free!\n");
-//   }
-
+//   t_file_destructor(file_1);
 //   return 0;
 // }
