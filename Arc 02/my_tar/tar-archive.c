@@ -6,6 +6,7 @@
 
 #include "./helpers.h"
 #include "./tar-archive.h"
+#include "./tar-file.h"
 
 // struct stat filestat;
   // if (fstat(file_descriptor, &filestat) < 0) {
@@ -39,7 +40,7 @@ Tar_archive* read_archive(string_t filename) {
       return NULL;
     }
 
-    if (is_block_empty(block)) {
+    if (is_block_empty(block, BLOCK_SIZE)) {
       empty_block_amount += 1;
       continue;
     }
@@ -78,24 +79,18 @@ Tar_archive* read_archive(string_t filename) {
     }
   }
 
-  // TODO: debug an archive
-  {
-    Tar_file* file = tar_archive->first_file;
-
-    while (file) {
-      printf("------------------------\n");
-      printf("Name: %s\n", file->header.name);
-      printf("Size: %d\n", oct_str_to_bytes(file->header.size, SIZE_OF_FIELD_SIZE));
-      printf("Content length: %d\n", get_str_length(file->content));
-      printf("Type: %d\n", file->header.typeflag);
-      printf("Content: %s\n", file->content);
-      printf("------------------------\n");
-      file = file->next_file;
-    }
-  }
-
   close(file_descriptor);
   return tar_archive;
+}
+
+void Tar_archive__print_files(Tar_archive* this) {
+  Tar_file* file = this->first_file;
+
+  while (file) {
+    print_message(STDOUT_FILENO, file->header.name);
+    print_message(STDOUT_FILENO, "\n");
+    file = file->next_file;
+  }
 }
 
 void Tar_archive__free(Tar_archive* this) {

@@ -9,4 +9,5 @@ typedef struct {
 #endif
 
 Tar_archive* read_archive(string_t filename);
+void Tar_archive__print_files(Tar_archive* self);
 void Tar_archive__free(Tar_archive* self);

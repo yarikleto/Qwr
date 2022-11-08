@@ -58,8 +58,8 @@ bool is_char_included(string_t str, char c) {
   return false;
 }
 
-bool is_block_empty(char* block) {
-  for (int i = 0; i < BLOCK_SIZE; ++i) {
+bool is_block_empty(char* block, int size) {
+  for (int i = 0; i < size; ++i) {
     if (block[i]) return false;
   }
 
