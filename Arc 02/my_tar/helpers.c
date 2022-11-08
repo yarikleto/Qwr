@@ -116,7 +116,7 @@ string_t get_str_slice(string_t str, int from, int to) {
   int str_length = get_str_length(str);
 
   if (from < 0) from = 0;
-  if (to > str_length - 1) to = str_length - 1;
+  if (to > str_length) to = str_length;
 
   int new_size;
   if (from > to) {

@@ -38,8 +38,8 @@ int main (int argc, char** argv) {
     if (tar_archive == NULL) return 1;
 
     // !!!! For the debug purpose
-    // int file_descriptor = open("saved-debug-archive.tar", O_WRONLY | O_TRUNC | O_CREAT | S_IRUSR | S_IWUSR);
-    // Tar_archive__save(tar_archive, file_descriptor);
+    int file_descriptor = open("saved-debug-archive.tar", O_WRONLY | O_TRUNC | O_CREAT | S_IRWXU);
+    Tar_archive__save(tar_archive, file_descriptor);
 
     // !!!! For the debug purpose
     // {
