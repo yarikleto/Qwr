@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/sysmacros.h>
 #include <unistd.h>
 #include <time.h>
 #include <errno.h>
 #include <string.h>
+#include <pwd.h>
+#include <grp.h>
 #include "t_file_info.h"
 
 file_info t_file_constructor(void) {
@@ -47,14 +50,36 @@ int t_file_initialize(file_info this) {
 
 file_info get_file_info(file_info this, char *filename) {
   struct stat filestat;
+  struct group *group_info;
+  struct passwd *passwd_info;
   int stat_result;
 
   if(stat(filename, &filestat) == -1) {
     printf("Unable to get file properties\n");
   }
   else {
+    group_info = getgrgid(filestat.st_gid);
+    passwd_info = getpwuid(filestat.st_uid);
     this->mode = filestat.st_mode;
+    this->size = (off_t)filestat.st_size;
+    this->uid = (uid_t)filestat.st_uid;
+    this->gid = (gid_t)filestat.st_gid;
+    this->mtime = filestat.st_mtim.tv_nsec;
+    this->gname = group_info->gr_name;
+    this->uname = passwd_info->pw_name;
+    this->devmajor = major(filestat.st_dev);
+    this->devminor = minor(filestat.st_dev);
+    this->magic = strcpy(this->magic, "ustar");
+    this->version = strcpy(this->version, "00");
+    printf("dev: %ld\n", (dev_t)filestat.st_dev);
+    printf("major: %d\n", this->devmajor);
+    printf("minor: %d\n", this->devminor);
     printf("file mode: %ld\n", this->mode);
+    printf("Block size: %ld\n", this->size);
+    printf("User name: %s\n", this->uname);
+    printf("Group name: %s\n", this->gname);
+    printf("magic: %s\n", this->magic);
+    printf("version: %s\n", this->version);
   }
   return this;
 }
