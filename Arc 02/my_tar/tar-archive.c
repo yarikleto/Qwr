@@ -6,6 +6,7 @@
 
 #include "./helpers.h"
 #include "./tar-archive.h"
+#include "./tar-file.h"
 
 // struct stat filestat;
   // if (fstat(file_descriptor, &filestat) < 0) {
@@ -39,7 +40,7 @@ Tar_archive* read_archive(string_t filename) {
       return NULL;
     }
 
-    if (is_block_empty(block)) {
+    if (is_block_empty(block, BLOCK_SIZE)) {
       empty_block_amount += 1;
       continue;
     }
@@ -78,23 +79,49 @@ Tar_archive* read_archive(string_t filename) {
     }
   }
 
-  // TODO: debug an archive
-  // {
-    Tar_file* file = tar_archive->first_file;
-
-    while (file) {
-      printf("Name: %s\n", file->header.name);
-      printf("Size: %d\n", oct_str_to_bytes(file->header.size, SIZE_OF_FIELD_SIZE));
-      printf("Content length: %d\n", get_str_length(file->content));
-      printf("Type: %d\n", Tar_file__get_file_type(file));
-      printf("Content: %s\n", file->content);
-      printf("------------------------\n");
-      file = file->next_file;
-    }
-  // }
-
   close(file_descriptor);
   return tar_archive;
+}
+
+void Tar_archive__print_files(Tar_archive* this) {
+  Tar_file* file = this->first_file;
+  while (file) {
+    print_message(STDOUT_FILENO, file->header.name);
+    print_message(STDOUT_FILENO, "\n");
+    file = file->next_file;
+  }
+}
+
+int Tar_archive__save(Tar_archive* this, int file_descriptor) {
+  Tar_file* file = this->first_file;
+  char empty_block[BLOCK_SIZE] = {0};
+
+  while (file) {
+    write(file_descriptor, &file->header, BLOCK_SIZE);
+
+    int content_size_in_bytes = oct_str_to_bytes(file->header.size, SIZE_OF_FIELD_SIZE);
+    int saved_size_in_bytes = 0;
+    while (saved_size_in_bytes < content_size_in_bytes) {
+      string_t str_slice = get_str_slice(
+        file->content,
+        saved_size_in_bytes,
+        saved_size_in_bytes + BLOCK_SIZE
+      );
+      int slice_length = get_str_length(str_slice);
+      write(file_descriptor, str_slice, slice_length);
+      write(file_descriptor, empty_block, BLOCK_SIZE - slice_length);
+
+      saved_size_in_bytes += BLOCK_SIZE;
+      free(str_slice);
+    }
+
+    file = file->next_file;
+  }
+
+  write(file_descriptor, empty_block, BLOCK_SIZE);
+  write(file_descriptor, empty_block, BLOCK_SIZE);
+
+  return 0;
 }
 
 void Tar_archive__free(Tar_archive* this) {
