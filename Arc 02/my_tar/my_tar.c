@@ -12,7 +12,7 @@ int main (int argc, char** argv) {
 
   if (validate_arguments(arguments, argc) > 0) return 1;
 
-  //Debug printf's for arguments
+  //Debug printf's
   // printf("Arguments size: %d\n", arguments->included_files->size);
   // if(arguments->included_files->items != NULL){
   //   for(int i = 0; arguments->included_files->items[i] != NULL;i++) {
@@ -22,18 +22,18 @@ int main (int argc, char** argv) {
 
   //Tar mode: -c create a new archive
   if (arguments->create_flag) {
-    int file_descriptor = STDOUT_FILENO;
-    if (arguments->output_file_flag) {
-      file_descriptor = open(arguments->output_file_flag, O_WRONLY | O_TRUNC | O_CREAT | S_IRUSR | S_IWUSR);
-      if (file_descriptor < 0) {
-        print_message(STDOUT_FILENO, "my_tar: Error opening archive: Failed to create/trunc '");
-        print_message(STDOUT_FILENO, arguments->output_file_flag);
-        print_message(STDOUT_FILENO, "'\n");
-        return 1;
-      }
-    }
+    // int file_descriptor = STDOUT_FILENO;
+    // if (arguments->output_file_flag) {
+    //   file_descriptor = open(arguments->output_file_flag, O_WRONLY | O_TRUNC | O_CREAT | S_IRUSR | S_IWUSR);
+    //   if (file_descriptor < 0) {
+    //     print_message(STDOUT_FILENO, "my_tar: Error opening archive: Failed to create/trunc '");
+    //     print_message(STDOUT_FILENO, arguments->output_file_flag);
+    //     print_message(STDOUT_FILENO, "'\n");
+    //     return 1;
+    //   }
+    // }
 
-    if (file_descriptor != STDOUT_FILENO) close(file_descriptor);
+    // if (file_descriptor != STDOUT_FILENO) close(file_descriptor);
   }
 
   //Tar mode: -x extract from the archive
