@@ -8,7 +8,7 @@ typedef struct t_file_info {
   off_t size;
   long int mtime;
   int chksum;
-  char typeflag;
+  char *typeflag;
   char *linkname;
   char *magic;
   char *version;
@@ -19,17 +19,6 @@ typedef struct t_file_info {
   char *prefix;
 } t_file_info;
 #endif
-
-/* Values used in typeflag field.  */
-#define REGTYPE  '0'            /* regular file */
-#define AREGTYPE '\0'           /* regular file */
-#define LNKTYPE  '1'            /* link */
-#define SYMTYPE  '2'            /* reserved */
-#define CHRTYPE  '3'            /* character special */
-#define BLKTYPE  '4'            /* block special */
-#define DIRTYPE  '5'            /* directory */
-#define FIFOTYPE '6'            /* FIFO special */
-#define CONTTYPE '7'            /* reserved */
 
 typedef t_file_info *file_info;
 

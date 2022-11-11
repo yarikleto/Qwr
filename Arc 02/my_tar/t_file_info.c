@@ -18,6 +18,7 @@ file_info t_file_constructor(void) {
 
 void t_file_destructor(file_info this) {
   free(this->name);
+  free(this->typeflag);
   free(this->linkname);
   free(this->magic);
   free(this->version);
@@ -35,7 +36,7 @@ int t_file_initialize(file_info this) {
   this->size = 0;
   this->mtime = 0;
   this->chksum = 0;
-  this->typeflag = 0;
+  this->typeflag = malloc(2 * sizeof(char));
   this->linkname = malloc(100 * sizeof(char));
   this->magic = malloc(6 * sizeof(char));
   this->version = malloc(2 * sizeof(char));
@@ -63,40 +64,13 @@ file_info get_file_info(file_info this, char *filename) {
     this->size = (off_t)filestat.st_size;
     this->uid = (uid_t)filestat.st_uid;
     this->gid = (gid_t)filestat.st_gid;
-    this->mtime = filestat.st_mtim.tv_sec;
+    this->mtime = filestat.st_mtim.tv_nsec;
     this->gname = group_info->gr_name;
     this->uname = passwd_info->pw_name;
     this->devmajor = major(filestat.st_dev);
     this->devminor = minor(filestat.st_dev);
     this->magic = strcpy(this->magic, "ustar");
     this->version = strcpy(this->version, "00");
-
-    //Get typeflag; Any st_mode that's not any of the typeflags,
-    //typeflag is set to REGTYPE
-    if(S_ISREG(filestat.st_mode)){
-      this->typeflag = REGTYPE;
-    }
-    else if(S_ISLNK(filestat.st_mode)) {
-      this->typeflag = LNKTYPE;
-    }
-    else if(S_ISCHR(filestat.st_mode)) {
-      this->typeflag = CHRTYPE;
-    }
-    else if(S_ISBLK(filestat.st_mode)) {
-      this->typeflag = BLKTYPE;
-    }
-    else if(S_ISDIR(filestat.st_mode)) {
-      this->typeflag = DIRTYPE;
-    }
-    else if(S_ISFIFO(filestat.st_mode)) {
-      this->typeflag = FIFOTYPE;
-    }
-    else {
-      this->typeflag = REGTYPE;
-    }
-    
-    //Print t_file_info fields
-    printf("modification time: %ld\n", this->mtime);
     printf("dev: %ld\n", (dev_t)filestat.st_dev);
     printf("major: %d\n", this->devmajor);
     printf("minor: %d\n", this->devminor);
@@ -106,7 +80,6 @@ file_info get_file_info(file_info this, char *filename) {
     printf("Group name: %s\n", this->gname);
     printf("magic: %s\n", this->magic);
     printf("version: %s\n", this->version);
-    printf("Typeflag: %c\n", this->typeflag);
   }
   return this;
 }
