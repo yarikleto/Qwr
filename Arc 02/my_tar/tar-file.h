@@ -4,8 +4,8 @@
 /* Values used in typeflag field.  */
 #define REGTYPE  '0'            /* regular file */
 #define AREGTYPE '\0'           /* regular file */
-#define LNKTYPE  '1'            /* link */
-#define SYMTYPE  '2'            /* reserved */
+#define LNKTYPE  '1'            /* hard link */
+#define SYMTYPE  '2'            /* symbolic link */
 #define CHRTYPE  '3'            /* character special */
 #define BLKTYPE  '4'            /* block special */
 #define DIRTYPE  '5'            /* directory */
