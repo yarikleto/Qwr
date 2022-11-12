@@ -28,7 +28,7 @@ void t_file_destructor(file_info this) {
 }
 
 int t_file_initialize(file_info this) {
-  this->name = malloc(100 * sizeof(char));
+  this->name = calloc(100, sizeof(char));
   this->mode = 0;
   this->uid = 0;
   this->gid = 0;
@@ -36,14 +36,14 @@ int t_file_initialize(file_info this) {
   this->mtime = 0;
   this->chksum = 0;
   this->typeflag = 0;
-  this->linkname = malloc(100 * sizeof(char));
+  this->linkname = calloc(100, sizeof(char));
   this->magic = malloc(6 * sizeof(char));
   this->version = malloc(2 * sizeof(char));
-  this->uname = malloc(32 * sizeof(char));
-  this->gname = malloc(32 * sizeof(char));
+  this->uname = calloc(32, sizeof(char));
+  this->gname = calloc(32, sizeof(char));
   this->devmajor = 0;
   this->devminor = 0;
-  this->prefix = malloc(155 * sizeof(char));
+  this->prefix = calloc(155, sizeof(char));
   return 0;
 }
 
@@ -53,7 +53,7 @@ file_info get_file_info(file_info this, char *filename) {
   struct passwd *passwd_info;
   int stat_result;
 
-  if(stat(filename, &filestat) == -1) {
+  if(lstat(filename, &filestat) == -1) {
     printf("Unable to get file properties\n");
   }
   else {
@@ -64,20 +64,19 @@ file_info get_file_info(file_info this, char *filename) {
     this->uid = (uid_t)filestat.st_uid;
     this->gid = (gid_t)filestat.st_gid;
     this->mtime = filestat.st_mtim.tv_sec;
-    this->gname = group_info->gr_name;
-    this->uname = passwd_info->pw_name;
+    this->gname = strcpy(this->gname, group_info->gr_name);
+    this->uname = strcpy(this->uname, passwd_info->pw_name);
     this->devmajor = major(filestat.st_dev);
     this->devminor = minor(filestat.st_dev);
     this->magic = strcpy(this->magic, "ustar");
     this->version = strcpy(this->version, "00");
 
-    //Get typeflag; Any st_mode that's not any of the typeflags,
-    //typeflag is set to REGTYPE
+    //Get typeflag
     if(S_ISREG(filestat.st_mode)){
       this->typeflag = REGTYPE;
     }
     else if(S_ISLNK(filestat.st_mode)) {
-      this->typeflag = LNKTYPE;
+      this->typeflag = SYMTYPE;
     }
     else if(S_ISCHR(filestat.st_mode)) {
       this->typeflag = CHRTYPE;
@@ -95,19 +94,25 @@ file_info get_file_info(file_info this, char *filename) {
       this->typeflag = REGTYPE;
     }
     
-    //Print t_file_info fields
-    printf("modification time: %ld\n", this->mtime);
-    printf("dev: %ld\n", (dev_t)filestat.st_dev);
-    printf("major: %d\n", this->devmajor);
-    printf("minor: %d\n", this->devminor);
-    printf("file mode: %ld\n", this->mode);
-    printf("Block size: %ld\n", this->size);
-    printf("User name: %s\n", this->uname);
-    printf("Group name: %s\n", this->gname);
-    printf("magic: %s\n", this->magic);
-    printf("version: %s\n", this->version);
-    printf("Typeflag: %c\n", this->typeflag);
+    //Set name field
+
+    //Calculate chksum
+
   }
+  //Print t_file_info fields
+  printf("modification time: %ld\n", this->mtime);
+  printf("dev: %ld\n", (dev_t)filestat.st_dev);
+  printf("major: %d\n", this->devmajor);
+  printf("minor: %d\n", this->devminor);
+  printf("file mode: %ld\n", this->mode);
+  printf("Block size: %ld\n", this->size);
+  printf("User name: %s\n", this->uname);
+  printf("Group name: %s\n", this->gname);
+  printf("magic: %s\n", this->magic);
+  printf("version: %s\n", this->version);
+  printf("Typeflag: %c\n", this->typeflag);
+  printf("st_mode & S_IFMT: %d\n", filestat.st_mode & S_IFMT);
+
   return this;
 }
 
