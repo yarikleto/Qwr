@@ -52,9 +52,9 @@ file_info get_file_info(file_info this, char *filename) {
   struct stat filestat;
   struct group *group_info;
   struct passwd *passwd_info;
-  int stat_result;
+  int stat_result = lstat(filename, &filestat);
 
-  if(lstat(filename, &filestat) == -1) {
+  if(stat_result == -1) {
     printf("Unable to get file properties\n");
   }
   else {
@@ -115,29 +115,31 @@ file_info get_file_info(file_info this, char *filename) {
 
   }
   //Print t_file_info fields
-  printf("Entry Name: %s\n", this->name);
-  printf("modification time: %ld\n", this->mtime);
-  printf("dev: %ld\n", (dev_t)filestat.st_dev);
-  printf("major: %d\n", this->devmajor);
-  printf("minor: %d\n", this->devminor);
-  printf("file mode: %ld\n", this->mode);
-  printf("Block size: %ld\n", this->size);
-  printf("User name: %s\n", this->uname);
-  printf("Group name: %s\n", this->gname);
-  printf("magic: %s\n", this->magic);
-  printf("version: %s\n", this->version);
-  printf("Typeflag: %c\n", this->typeflag);
-  printf("st_mode & S_IFMT: %d\n", filestat.st_mode & S_IFMT);
+  if(stat_result != -1) {
+    printf("Entry Name: %s\n", this->name);
+    printf("modification time: %ld\n", this->mtime);
+    printf("dev: %ld\n", (dev_t)filestat.st_dev);
+    printf("major: %d\n", this->devmajor);
+    printf("minor: %d\n", this->devminor);
+    printf("file mode: %ld\n", this->mode);
+    printf("Block size: %ld\n", this->size);
+    printf("User name: %s\n", this->uname);
+    printf("Group name: %s\n", this->gname);
+    printf("magic: %s\n", this->magic);
+    printf("version: %s\n", this->version);
+    printf("Typeflag: %c\n", this->typeflag);
+    printf("st_mode & S_IFMT: %d\n", filestat.st_mode & S_IFMT);
 
-  //File type bitmask values
-  printf("S_IFMT: %d\n", S_IFMT);
-  printf("S_IFSOCK: %d\n", S_IFSOCK);
-  printf("S_IFLNK: %d\n", S_IFLNK);
-  printf("S_IFREG: %d\n", S_IFREG);
-  printf("S_IBLK: %d\n", S_IFBLK);
-  printf("S_IDIR: %d\n", S_IFDIR);
-  printf("S_ICHR: %d\n", S_IFCHR);
-  printf("S_IFIFO: %d\n", S_IFIFO);
+    //File type bitmask values
+    printf("S_IFMT: %d\n", S_IFMT);
+    printf("S_IFSOCK: %d\n", S_IFSOCK);
+    printf("S_IFLNK: %d\n", S_IFLNK);
+    printf("S_IFREG: %d\n", S_IFREG);
+    printf("S_IBLK: %d\n", S_IFBLK);
+    printf("S_IDIR: %d\n", S_IFDIR);
+    printf("S_ICHR: %d\n", S_IFCHR);
+    printf("S_IFIFO: %d\n", S_IFIFO);
+  }
 
   return this;
 }
