@@ -66,8 +66,8 @@ file_info get_file_info(file_info this, char *filename) {
     this->mtime = filestat.st_mtim.tv_sec;
     this->gname = strcpy(this->gname, group_info->gr_name);
     this->uname = strcpy(this->uname, passwd_info->pw_name);
-    this->devmajor = major(filestat.st_dev);
-    this->devminor = minor(filestat.st_dev);
+    this->devmajor = major(filestat.st_rdev);
+    this->devminor = minor(filestat.st_rdev);
     this->magic = strcpy(this->magic, "ustar");
     this->version = strcpy(this->version, "00");
     
@@ -113,26 +113,27 @@ file_info get_file_info(file_info this, char *filename) {
     if(this->typeflag == LNKTYPE || this->typeflag == SYMTYPE) {
       readlink(filename, this->linkname, 100);
     }
-    
-    //Calculate chksum
 
   }
   //Print t_file_info fields
   if(stat_result != -1) {
     printf("Entry Name: %s\n", this->name);
-    printf("Link Name: %s\n", this->linkname);
-    printf("modification time: %ld\n", this->mtime);
-    printf("dev: %ld\n", (dev_t)filestat.st_dev);
-    printf("major: %d\n", this->devmajor);
-    printf("minor: %d\n", this->devminor);
     printf("file mode: %lo\n", this->mode);
-    printf("Block size: %ld\n", this->size);
-    printf("User name: %s\n", this->uname);
-    printf("Group name: %s\n", this->gname);
+    printf("uid: %o\n", this->uid);
+    printf("gid: %o\n", this->gid);
+    printf("size: %lo\n", this->size);
+    printf("modification time: %lo\n", this->mtime);
+    printf("Typeflag: %c\n", this->typeflag);
+    printf("Link Name: %s\n", this->linkname);
     printf("magic: %s\n", this->magic);
     printf("version: %s\n", this->version);
-    printf("Typeflag: %c\n", this->typeflag);
-    printf("st_mode & S_IFMT: %d\n", filestat.st_mode & S_IFMT);
+    printf("User name: %s\n", this->uname);
+    printf("Group name: %s\n", this->gname);
+    printf("dev: %lo\n", (dev_t)filestat.st_rdev);
+    printf("major: %o\n", this->devmajor);
+    printf("minor: %o\n", this->devminor);
+    // printf("checksum in octal: %lo\n", this->chksum);
+    // printf("st_mode & S_IFMT: %d\n", filestat.st_mode & S_IFMT);
 
     //File type bitmask values
     // printf("S_IFMT: %d\n", S_IFMT);

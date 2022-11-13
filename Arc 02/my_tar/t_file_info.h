@@ -7,7 +7,7 @@ typedef struct t_file_info {
   gid_t gid;
   off_t size;
   long int mtime;
-  int chksum;
+  __uintmax_t chksum;
   char typeflag;
   char *linkname;
   char *magic;
