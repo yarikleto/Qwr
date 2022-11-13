@@ -60,7 +60,6 @@ file_info get_file_info(file_info this, char *filename) {
   else {
     group_info = getgrgid(filestat.st_gid);
     passwd_info = getpwuid(filestat.st_uid);
-    this->mode = filestat.st_mode;
     this->size = (off_t)filestat.st_size;
     this->uid = (uid_t)filestat.st_uid;
     this->gid = (gid_t)filestat.st_gid;
@@ -73,6 +72,7 @@ file_info get_file_info(file_info this, char *filename) {
     this->version = strcpy(this->version, "00");
     
     //Convert st_mode to file mode
+    this->mode = filestat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO);
 
     //Set typeflag
     if(S_ISREG(filestat.st_mode)){
@@ -100,28 +100,32 @@ file_info get_file_info(file_info this, char *filename) {
     
     //Set name field
     if(this->typeflag == DIRTYPE) {
-      if(filename[strlen(filename)] != '/') {
+      if(filename[strlen(filename)-1] != '/') {
         strcat(filename, "/");
-        this->name = strcpy(this->name, filename);
       }
+      this->name = strcpy(this->name, filename);
     }
     else {
       this->name = strcpy(this->name, filename);
     }
-    
-    //Set linkname field
 
+    //Set linkname field
+    if(this->typeflag == LNKTYPE || this->typeflag == SYMTYPE) {
+      readlink(filename, this->linkname, 100);
+    }
+    
     //Calculate chksum
 
   }
   //Print t_file_info fields
   if(stat_result != -1) {
     printf("Entry Name: %s\n", this->name);
+    printf("Link Name: %s\n", this->linkname);
     printf("modification time: %ld\n", this->mtime);
     printf("dev: %ld\n", (dev_t)filestat.st_dev);
     printf("major: %d\n", this->devmajor);
     printf("minor: %d\n", this->devminor);
-    printf("file mode: %ld\n", this->mode);
+    printf("file mode: %lo\n", this->mode);
     printf("Block size: %ld\n", this->size);
     printf("User name: %s\n", this->uname);
     printf("Group name: %s\n", this->gname);
@@ -131,14 +135,14 @@ file_info get_file_info(file_info this, char *filename) {
     printf("st_mode & S_IFMT: %d\n", filestat.st_mode & S_IFMT);
 
     //File type bitmask values
-    printf("S_IFMT: %d\n", S_IFMT);
-    printf("S_IFSOCK: %d\n", S_IFSOCK);
-    printf("S_IFLNK: %d\n", S_IFLNK);
-    printf("S_IFREG: %d\n", S_IFREG);
-    printf("S_IBLK: %d\n", S_IFBLK);
-    printf("S_IDIR: %d\n", S_IFDIR);
-    printf("S_ICHR: %d\n", S_IFCHR);
-    printf("S_IFIFO: %d\n", S_IFIFO);
+    // printf("S_IFMT: %d\n", S_IFMT);
+    // printf("S_IFSOCK: %d\n", S_IFSOCK);
+    // printf("S_IFLNK: %d\n", S_IFLNK);
+    // printf("S_IFREG: %d\n", S_IFREG);
+    // printf("S_IBLK: %d\n", S_IFBLK);
+    // printf("S_IDIR: %d\n", S_IFDIR);
+    // printf("S_ICHR: %d\n", S_IFCHR);
+    // printf("S_IFIFO: %d\n", S_IFIFO);
   }
 
   return this;

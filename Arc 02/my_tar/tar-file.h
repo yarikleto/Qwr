@@ -33,7 +33,7 @@ typedef union {
     char devminor[8];             /* 337 */
     char prefix[155];             /* 345 */
   };
-  char block[BLOCK_SIZE]; // Reserve 512 bytes
+  char block[BLOCK_SIZE];
 } tar_header_t;
 #endif
 
