@@ -48,6 +48,57 @@ int t_file_initialize(file_info this) {
   return 0;
 }
 
+int add_ascii(char *str) {
+  int i = 0;
+  int ascii_sum = 0;
+  while(str[i] != '\0') {
+    ascii_sum += str[i];
+    i++;
+  }
+  return ascii_sum;
+}
+
+int get_long_int_len(long int n) {
+  int int_len = 1;
+
+  while(n > 9) {
+      int_len++;
+      n = n / 10;
+  }
+  return int_len;
+}
+
+__uintmax_t add_long_digits(long int n) {
+  int n_len = get_long_int_len(n);
+  __uintmax_t summed_digits = 0;
+  
+  for(int i = n_len - 1; i >= 0; i--) {
+    summed_digits += (n % 10);
+    n = n / 10;
+  }
+  return summed_digits;
+}
+
+int get_uint_len(unsigned int n) {
+  int int_len = 1;
+
+  while(n > 9) {
+      int_len++;
+      n = n / 10;
+  }
+  return int_len;
+}
+__uintmax_t add_uint_digits(unsigned int n) {
+  int n_len = get_uint_len(n);
+  __uintmax_t summed_digits = 0;
+  
+  for(int i = n_len - 1; i >= 0; i--) {
+    summed_digits += (n % 10);
+    n = n / 10;
+  }
+  return summed_digits;
+}
+
 file_info get_file_info(file_info this, char *filename) {
   struct stat filestat;
   struct group *group_info;
@@ -69,10 +120,10 @@ file_info get_file_info(file_info this, char *filename) {
     this->devmajor = major(filestat.st_rdev);
     this->devminor = minor(filestat.st_rdev);
     this->magic = strcpy(this->magic, "ustar");
-    this->version = strcpy(this->version, "00");
+    this->version = strcpy(this->version, "0");
     
     //Convert st_mode to file mode
-    this->mode = filestat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO);
+    this->mode = filestat.st_mode & (S_ISUID | S_ISGID | S_ISVTX |S_IRWXU | S_IRWXG | S_IRWXO);
 
     //Set typeflag
     if(S_ISREG(filestat.st_mode)){
