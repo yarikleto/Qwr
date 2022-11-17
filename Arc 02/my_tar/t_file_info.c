@@ -48,57 +48,6 @@ int t_file_initialize(file_info this) {
   return 0;
 }
 
-int add_ascii(char *str) {
-  int i = 0;
-  int ascii_sum = 0;
-  while(str[i] != '\0') {
-    ascii_sum += str[i];
-    i++;
-  }
-  return ascii_sum;
-}
-
-int get_long_int_len(long int n) {
-  int int_len = 1;
-
-  while(n > 9) {
-      int_len++;
-      n = n / 10;
-  }
-  return int_len;
-}
-
-__uintmax_t add_long_digits(long int n) {
-  int n_len = get_long_int_len(n);
-  __uintmax_t summed_digits = 0;
-  
-  for(int i = n_len - 1; i >= 0; i--) {
-    summed_digits += (n % 10);
-    n = n / 10;
-  }
-  return summed_digits;
-}
-
-int get_uint_len(unsigned int n) {
-  int int_len = 1;
-
-  while(n > 9) {
-      int_len++;
-      n = n / 10;
-  }
-  return int_len;
-}
-__uintmax_t add_uint_digits(unsigned int n) {
-  int n_len = get_uint_len(n);
-  __uintmax_t summed_digits = 0;
-  
-  for(int i = n_len - 1; i >= 0; i--) {
-    summed_digits += (n % 10);
-    n = n / 10;
-  }
-  return summed_digits;
-}
-
 file_info get_file_info(file_info this, char *filename) {
   struct stat filestat;
   struct group *group_info;
@@ -167,24 +116,24 @@ file_info get_file_info(file_info this, char *filename) {
 
   }
   //Print t_file_info fields
-  if(stat_result != -1) {
-    printf("Entry Name: %s\n", this->name);
-    printf("file mode: %lo\n", this->mode);
-    printf("uid: %o\n", this->uid);
-    printf("gid: %o\n", this->gid);
-    printf("size: %lo\n", this->size);
-    printf("modification time: %lo\n", this->mtime);
-    printf("Typeflag: %c\n", this->typeflag);
-    printf("Link Name: %s\n", this->linkname);
-    printf("magic: %s\n", this->magic);
-    printf("version: %s\n", this->version);
-    printf("User name: %s\n", this->uname);
-    printf("Group name: %s\n", this->gname);
-    printf("dev: %lo\n", (dev_t)filestat.st_rdev);
-    printf("major: %o\n", this->devmajor);
-    printf("minor: %o\n", this->devminor);
-    // printf("checksum in octal: %lo\n", this->chksum);
-    // printf("st_mode & S_IFMT: %d\n", filestat.st_mode & S_IFMT);
+  // if(stat_result != -1) {
+  //   printf("Entry Name: %s\n", this->name);
+  //   printf("file mode: %lo\n", this->mode);
+  //   printf("uid: %o\n", this->uid);
+  //   printf("gid: %o\n", this->gid);
+  //   printf("size: %lo\n", this->size);
+  //   printf("modification time: %lo\n", this->mtime);
+  //   printf("Typeflag: %c\n", this->typeflag);
+  //   printf("Link Name: %s\n", this->linkname);
+  //   printf("magic: %s\n", this->magic);
+  //   printf("version: %s\n", this->version);
+  //   printf("User name: %s\n", this->uname);
+  //   printf("Group name: %s\n", this->gname);
+  //   printf("dev: %lo\n", (dev_t)filestat.st_rdev);
+  //   printf("major: %o\n", this->devmajor);
+  //   printf("minor: %o\n", this->devminor);
+  // printf("checksum in octal: %lo\n", this->chksum);
+  // printf("st_mode & S_IFMT: %d\n", filestat.st_mode & S_IFMT);
 
     //File type bitmask values
     // printf("S_IFMT: %d\n", S_IFMT);
@@ -195,27 +144,27 @@ file_info get_file_info(file_info this, char *filename) {
     // printf("S_IDIR: %d\n", S_IFDIR);
     // printf("S_ICHR: %d\n", S_IFCHR);
     // printf("S_IFIFO: %d\n", S_IFIFO);
-  }
+  // }
 
   return this;
 }
 
 ////main function for testing above functions
-int main(int argc, char **argv) {
+// int main(int argc, char **argv) {
 
-  //Test t_file_constructor and t_file_initialize
-  file_info file_1 = t_file_constructor();
-  t_file_initialize(file_1);
+//   //Test t_file_constructor and t_file_initialize
+//   file_info file_1 = t_file_constructor();
+//   t_file_initialize(file_1);
 
-  //Test get_file_info
-  if(argc > 1) {
-    printf("Input: %s\n", argv[1]);
-    file_1 = get_file_info(file_1, argv[1]);
-  }
-  else {
-    printf("No inputs, skipping get_file_info test\n");
-  }
+//   //Test get_file_info
+//   if(argc > 1) {
+//     printf("Input: %s\n", argv[1]);
+//     file_1 = get_file_info(file_1, argv[1]);
+//   }
+//   else {
+//     printf("No inputs, skipping get_file_info test\n");
+//   }
   
-  t_file_destructor(file_1);
-  return 0;
-}
+//   t_file_destructor(file_1);
+//   return 0;
+// }
