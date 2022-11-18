@@ -8,14 +8,6 @@
 #include "./tar-archive.h"
 #include "./tar-file.h"
 
-// struct stat filestat;
-  // if (fstat(file_descriptor, &filestat) < 0) {
-  //   print_message(STDOUT_FILENO, "tar: '");
-  //   print_message(STDOUT_FILENO, path);
-  //   print_message(STDOUT_FILENO, "' : Cannot stat\n");
-  //   return 1;
-  // }
-
 Tar_archive* read_archive(string_t filename) {
   int file_descriptor = open(filename, O_RDONLY);
   if (file_descriptor < 0) {

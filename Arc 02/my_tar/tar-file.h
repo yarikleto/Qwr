@@ -1,16 +1,7 @@
+#include "t_file_info.h"
+
 #define BLOCK_SIZE 512
 #define SIZE_OF_FIELD_SIZE 12
-
-/* Values used in typeflag field.  */
-#define REGTYPE  '0'            /* regular file */
-#define AREGTYPE '\0'           /* regular file */
-#define LNKTYPE  '1'            /* hard link */
-#define SYMTYPE  '2'            /* symbolic link */
-#define CHRTYPE  '3'            /* character special */
-#define BLKTYPE  '4'            /* block special */
-#define DIRTYPE  '5'            /* directory */
-#define FIFOTYPE '6'            /* FIFO special */
-#define CONTTYPE '7'            /* reserved */
 
 #ifndef TAR_HEADER_T
 #define TAR_HEADER_T
@@ -47,6 +38,9 @@ typedef struct Tar_file {
 } Tar_file;
 #endif
 
+typedef tar_header_t *tar_header_ptr;
+
+int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info);
 Tar_file* create_tar_file();
 void Tar_file__free(Tar_file* self);
 int Tar_file__push_content(Tar_file* this, string_t content, int content_size);
