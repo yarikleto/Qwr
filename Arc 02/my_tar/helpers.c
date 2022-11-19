@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "./helpers.h"
 #include "./tar-file.h"
@@ -133,4 +134,46 @@ string_t get_str_slice(string_t str, int from, int to) {
   }
 
   return new_str;
+}
+
+char *reverse_string(char *input_string) {
+  char *head = input_string;
+  char *end = input_string + strlen(input_string) - 1;
+  char temp;
+
+  while(head < end) {
+    temp = *head;
+    *head = *end;
+    *end = temp;
+
+    head++;
+    end--;
+  }
+  return input_string;
+}
+
+char *octal_string(long int n, int string_size) {
+  int i = 0;
+  int remainder;
+  int num_zeros;
+  char *octal_string = malloc(string_size * sizeof(char));
+  char *octal = malloc(20 * sizeof(char));
+  //Add each octal digit to the octal String. NOTE: the string will be backwards and needs to be reversed.
+  while(n != 0) {
+    remainder = n % 8;
+    octal[i] = remainder + '0';
+    n = n / 8; 
+    i++;
+  }
+  octal[i] = '\0';
+  reverse_string(octal);
+  num_zeros = (string_size - 1) - strlen(octal);
+
+  for(int i = 0; i < num_zeros; i++) {
+    octal_string[i] = '0';
+  }
+  octal_string[num_zeros] = '\0';
+  strcat(octal_string, octal);
+  free(octal);
+  return octal_string;
 }
