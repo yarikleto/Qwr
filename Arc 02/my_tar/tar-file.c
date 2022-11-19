@@ -9,12 +9,16 @@
 char *calculate_checksum(tar_header_ptr tar_header) {
   char *checksum;
   int ascii_sum = 0;
+  char *real_checksum = calloc(8, sizeof(char));
 
-  for(int i = 0; i < BLOCK_SIZE; i++) {
+  for(int i = 0; i < BLOCK_SIZE - 12; i++) {
     ascii_sum += tar_header->block[i];
   }
-  checksum = octal_string(ascii_sum, 8);
-  return checksum;
+  checksum = octal_string(ascii_sum, 7);
+  strcpy(real_checksum, checksum);
+  real_checksum[7] = ' ';
+
+  return real_checksum;
 }
 
 int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info){
@@ -23,8 +27,8 @@ int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info){
   char *gid = octal_string(f_info->gid, 8);
   char *size = octal_string(f_info->size, 12);
   char *mtime = octal_string(f_info->mtime, 12);
-  char *devmajor = octal_string(f_info->devmajor, 8);
-  char *devminor = octal_string(f_info->devminor, 8);
+  char devmajor[8] = {0};
+  char devminor[8] = {0};
   char *checksum;
   
   if(f_info == NULL) {
@@ -38,23 +42,22 @@ int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info){
   strncpy(tar_file_header->mtime, mtime, 12);
   strncpy(tar_file_header->chksum, "        ", 8);
   tar_file_header->typeflag = f_info->typeflag;
+  strncpy(tar_file_header->linkname, f_info->linkname, 100);
   strncpy(tar_file_header->magic, f_info->magic, 6);
-  strncpy(tar_file_header->version, f_info->version, 2);
+  strncpy(tar_file_header->version, "  ", 2);
   strncpy(tar_file_header->uname, f_info->uname, 32);
   strncpy(tar_file_header->gname, f_info->gname, 32);
   strncpy(tar_file_header->devmajor, devmajor, 8);
   strncpy(tar_file_header->devminor, devminor, 8);
   strncpy(tar_file_header->prefix, f_info->prefix, 155);
   checksum = calculate_checksum(tar_file_header);
-  strncpy(tar_file_header->chksum, checksum, 8);
+  memory_copy(tar_file_header->chksum, checksum, 8);
 
   free(mode);
   free(uid);
   free(gid);
   free(size);
   free(mtime);
-  free(devmajor);
-  free(devminor);
   free(checksum);
   
   return 0;
@@ -102,23 +105,23 @@ int main() {
   FILE *file_ptr = fopen("tar-test2.txt", "w");
   fwrite(&t_file->header, 1, BLOCK_SIZE, file_ptr);
   fclose(file_ptr);
-  printf("Entry Name: %s\n", t_file->header.name);
-  printf("file mode: %s\n", t_file->header.mode);
-  printf("uid: %s\n", t_file->header.uid);
-  printf("gid: %s\n", t_file->header.gid);
-  printf("size: %s\n", t_file->header.size);
-  printf("modification time: %s\n", t_file->header.mtime);
-  printf("Checksum: %s\n", t_file->header.chksum);
-  printf("Typeflag: %c\n", t_file->header.typeflag);
-  printf("Link Name: %s\n", t_file->header.linkname);
-  printf("magic: %s\n", t_file->header.magic);
-  printf("version: %s\n", t_file->header.version);
-  printf("User name: %s\n", t_file->header.uname);
-  printf("Group name: %s\n", t_file->header.gname);
-  printf("Checksum: %s\n", t_file->header.chksum);
-  printf("major: %s\n", t_file->header.devmajor);
-  printf("minor: %s\n", t_file->header.devminor);
-  printf("prefix: %s\n", t_file->header.prefix);
+  // printf("Entry Name: %s\n", t_file->header.name);
+  // printf("file mode: %s\n", t_file->header.mode);
+  // printf("uid: %s\n", t_file->header.uid);
+  // printf("gid: %s\n", t_file->header.gid);
+  // printf("size: %s\n", t_file->header.size);
+  // printf("modification time: %s\n", t_file->header.mtime);
+  // printf("Checksum: %s\n", t_file->header.chksum);
+  // printf("Typeflag: %c\n", t_file->header.typeflag);
+  // printf("Link Name: %s\n", t_file->header.linkname);
+  // printf("magic: %s\n", t_file->header.magic);
+  // printf("version: %s\n", t_file->header.version);
+  // printf("User name: %s\n", t_file->header.uname);
+  // printf("Group name: %s\n", t_file->header.gname);
+  // printf("Checksum: %s|\n", t_file->header.chksum);
+  // printf("major: %s\n", t_file->header.devmajor);
+  // printf("minor: %s\n", t_file->header.devminor);
+  // printf("prefix: %s\n", t_file->header.prefix);
 
   t_file_destructor(file_1);
   Tar_file__free(t_file);
