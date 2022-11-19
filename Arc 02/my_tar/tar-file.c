@@ -6,6 +6,17 @@
 #include "./tar-file.h"
 #include "./t_file_info.h"
 
+char *calculate_checksum(tar_header_ptr tar_header) {
+  char *checksum;
+  int ascii_sum = 0;
+
+  for(int i = 0; i < BLOCK_SIZE; i++) {
+    ascii_sum += tar_header->block[i];
+  }
+  checksum = octal_string(ascii_sum, 8);
+  return checksum;
+}
+
 int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info){
   char *mode = octal_string(f_info->mode, 8);
   char *uid = octal_string(f_info->uid, 8);
@@ -25,6 +36,7 @@ int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info){
   strncpy(tar_file_header->gid, gid, 8);
   strncpy(tar_file_header->size, size, 12);
   strncpy(tar_file_header->mtime, mtime, 12);
+  strncpy(tar_file_header->chksum, "        ", 8);
   tar_file_header->typeflag = f_info->typeflag;
   strncpy(tar_file_header->magic, f_info->magic, 6);
   strncpy(tar_file_header->version, f_info->version, 2);
@@ -33,6 +45,17 @@ int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info){
   strncpy(tar_file_header->devmajor, devmajor, 8);
   strncpy(tar_file_header->devminor, devminor, 8);
   strncpy(tar_file_header->prefix, f_info->prefix, 155);
+  checksum = calculate_checksum(tar_file_header);
+  strncpy(tar_file_header->chksum, checksum, 8);
+
+  free(mode);
+  free(uid);
+  free(gid);
+  free(size);
+  free(mtime);
+  free(devmajor);
+  free(devminor);
+  free(checksum);
   
   return 0;
 }
@@ -92,9 +115,13 @@ int main() {
   printf("version: %s\n", t_file->header.version);
   printf("User name: %s\n", t_file->header.uname);
   printf("Group name: %s\n", t_file->header.gname);
+  printf("Checksum: %s\n", t_file->header.chksum);
   printf("major: %s\n", t_file->header.devmajor);
   printf("minor: %s\n", t_file->header.devminor);
   printf("prefix: %s\n", t_file->header.prefix);
+
+  t_file_destructor(file_1);
+  Tar_file__free(t_file);
   
   return 0;
 }
