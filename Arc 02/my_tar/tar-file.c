@@ -17,6 +17,7 @@ char *calculate_checksum(tar_header_ptr tar_header) {
   checksum = octal_string(ascii_sum, 7);
   strcpy(real_checksum, checksum);
   real_checksum[7] = ' ';
+  free(checksum);
 
   return real_checksum;
 }
@@ -95,16 +96,16 @@ int Tar_file__get_file_type(Tar_file* this) {
 }
 
 //main function for testing above functions
-int main() {
-  Tar_file *t_file = create_tar_file();
-  file_info file_1 = t_file_constructor();
-  t_file_initialize(file_1);
-  file_1 = get_file_info(file_1, "test-3.txt");
-  fill_tar_header(&t_file->header, file_1);
+// int main() {
+//   Tar_file *t_file = create_tar_file();
+//   file_info file_1 = t_file_constructor();
+//   t_file_initialize(file_1);
+//   file_1 = get_file_info(file_1, "test-3.txt");
+//   fill_tar_header(&t_file->header, file_1);
 
-  FILE *file_ptr = fopen("tar-test2.txt", "w");
-  fwrite(&t_file->header, 1, BLOCK_SIZE, file_ptr);
-  fclose(file_ptr);
+//   FILE *file_ptr = fopen("tar-test2.txt", "w");
+//   fwrite(&t_file->header, 1, BLOCK_SIZE, file_ptr);
+//   fclose(file_ptr);
   // printf("Entry Name: %s\n", t_file->header.name);
   // printf("file mode: %s\n", t_file->header.mode);
   // printf("uid: %s\n", t_file->header.uid);
@@ -123,8 +124,8 @@ int main() {
   // printf("minor: %s\n", t_file->header.devminor);
   // printf("prefix: %s\n", t_file->header.prefix);
 
-  t_file_destructor(file_1);
-  Tar_file__free(t_file);
+//   t_file_destructor(file_1);
+//   Tar_file__free(t_file);
   
-  return 0;
-}
+//   return 0;
+// }
