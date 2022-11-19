@@ -7,15 +7,31 @@
 #include "./t_file_info.h"
 
 int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info){
+  char *mode = octal_string(f_info->mode, 8);
+  char *uid = octal_string(f_info->uid, 8);
+  char *gid = octal_string(f_info->gid, 8);
+  char *size = octal_string(f_info->size, 12);
+  char *mtime = octal_string(f_info->mtime, 12);
+  char *devmajor = octal_string(f_info->devmajor, 8);
+  char *devminor = octal_string(f_info->devminor, 8);
+  char *checksum;
+  
   if(f_info == NULL) {
     return 1;
   }
   strncpy(tar_file_header->name, f_info->name, 100);
+  strncpy(tar_file_header->mode, mode, 8);
+  strncpy(tar_file_header->uid, uid, 8);
+  strncpy(tar_file_header->gid, gid, 8);
+  strncpy(tar_file_header->size, size, 12);
+  strncpy(tar_file_header->mtime, mtime, 12);
   tar_file_header->typeflag = f_info->typeflag;
   strncpy(tar_file_header->magic, f_info->magic, 6);
   strncpy(tar_file_header->version, f_info->version, 2);
   strncpy(tar_file_header->uname, f_info->uname, 32);
   strncpy(tar_file_header->gname, f_info->gname, 32);
+  strncpy(tar_file_header->devmajor, devmajor, 8);
+  strncpy(tar_file_header->devminor, devminor, 8);
   strncpy(tar_file_header->prefix, f_info->prefix, 155);
   
   return 0;
