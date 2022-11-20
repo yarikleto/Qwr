@@ -16,29 +16,22 @@ int main (int argc, char** argv) {
     return 1;
   }
 
-  //Debug printf's
-  // printf("Arguments size: %d\n", arguments->included_files->size);
-  // if(arguments->included_files->items != NULL){
-  //   for(int i = 0; arguments->included_files->items[i] != NULL;i++) {
-  //     printf("%s\n", arguments->included_files->items[i]);
-  //   }
-  // }
-
   //Tar mode: -c create a new archive
   if (arguments->create_flag) {
     int file_descriptor = STDOUT_FILENO;
     struct stat test_stat;
+    int index = 0;
+    while(index < arguments->included_files->size) {
+      printf("%s\n", arguments->included_files->items[index]);
+      index++;
+    }
 
     if (lstat(arguments->output_file_flag, &test_stat) != -1) {
-      print_message(STDERR_FILENO, "Code entered lstat != -1\n");
       file_descriptor = open(arguments->output_file_flag, O_WRONLY | O_TRUNC | O_CREAT | S_IRUSR | S_IWUSR);
       close(file_descriptor);
     }
     else {
-      print_message(STDOUT_FILENO, "my_tar: ");
-      print_message(STDOUT_FILENO, arguments->output_file_flag);
-      print_message(STDOUT_FILENO, ":Cannot stat: No such file or directory\n");
-      print_message(STDOUT_FILENO, "tar: Exiting with failure status due to previous errors");
+      cannot_stat_message(arguments->included_files->items[0]);
       free_arguments(arguments);
       return 1;
     }

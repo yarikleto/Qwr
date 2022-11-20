@@ -66,6 +66,8 @@ arguments_t* parse_arguments(int argc, char** argv) {
         if (arg_value[i + 1] != '\0' || !argv[arg_index + 1]) {
           arguments->output_file_flag = malloc(sizeof(char) * 1);
           arguments->output_file_flag[0] = '\0';
+          print_message(STDOUT_FILENO, "flag == f if statement\n");
+          print_message(STDOUT_FILENO, arguments->output_file_flag);
           return arguments;
         }
         arguments->output_file_flag = argv[arg_index + 1];
@@ -183,4 +185,11 @@ int validate_arguments(arguments_t* arguments, int argc) {
   }
 
   return 0;
+}
+
+void cannot_stat_message(string_t output_file_flag) {
+  print_message(STDOUT_FILENO, "my_tar: ");
+  print_message(STDOUT_FILENO, output_file_flag);
+  print_message(STDOUT_FILENO, ": Cannot stat: No such file or directory\n");
+  print_message(STDOUT_FILENO, "my_tar: Exiting with failure status due to previous errors\n");
 }
