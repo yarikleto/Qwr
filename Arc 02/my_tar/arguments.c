@@ -111,6 +111,7 @@ int validate_arguments(arguments_t* arguments, int argc) {
   if (arguments->output_file_flag != NULL && get_str_length(arguments->output_file_flag) == 0) {
     print_message(STDERR_FILENO, "tar: Option -f requires an argument\n");
     print_usage_message();
+    free(arguments->output_file_flag);
     return 1;
   }
 
@@ -171,11 +172,13 @@ int validate_arguments(arguments_t* arguments, int argc) {
 
   if (arguments->list_flag && !arguments->output_file_flag) {
     print_message(STDERR_FILENO, "tar: Option -t also requires -f option\n");
+    free(arguments->output_file_flag);
     return 1;
   }
 
   if (arguments->extract_flag && !arguments->output_file_flag) {
     print_message(STDERR_FILENO, "tar: Option -x also requires -f option\n");
+    free(arguments->output_file_flag);
     return 1;
   }
 
