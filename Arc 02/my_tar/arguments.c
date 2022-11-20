@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <sys/stat.h>
 
 #include "./arguments.h"
 #include "./helpers.h"
@@ -187,9 +188,28 @@ int validate_arguments(arguments_t* arguments, int argc) {
   return 0;
 }
 
+int validate_filestat(Array *included_files) {
+  int index = 0;
+  int valid_stat_flag;
+  struct stat test_stat;
+  while(index < included_files->size) {
+    if(lstat(included_files->items[index], &test_stat) == -1) {
+      cannot_stat_message(included_files->items[index]);
+      valid_stat_flag = 1;
+    }
+    index++;
+  }
+  if(valid_stat_flag == 1) {
+    print_message(STDOUT_FILENO, "my_tar: Exiting with failure status due to previous errors\n");
+    return 1;
+  }
+  else {
+    return 0;
+  }
+}
+
 void cannot_stat_message(string_t output_file_flag) {
   print_message(STDOUT_FILENO, "my_tar: ");
   print_message(STDOUT_FILENO, output_file_flag);
   print_message(STDOUT_FILENO, ": Cannot stat: No such file or directory\n");
-  print_message(STDOUT_FILENO, "my_tar: Exiting with failure status due to previous errors\n");
 }
