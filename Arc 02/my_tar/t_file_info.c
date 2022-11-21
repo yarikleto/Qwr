@@ -79,6 +79,7 @@ file_info get_file_info(file_info this, char *filename) {
     }
     else if(S_ISLNK(filestat.st_mode)) {
       this->typeflag = SYMTYPE;
+      this->size = 0;
     }
     else if(S_ISCHR(filestat.st_mode)) {
       this->typeflag = CHRTYPE;
