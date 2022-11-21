@@ -18,11 +18,11 @@ int main (int argc, char** argv) {
 
   //Tar mode: -c create a new archive
   if (arguments->create_flag) {
-    // int file_descriptor = STDOUT_FILENO;
+    int file_descriptor;
     if(validate_filestat(arguments->included_files) > 0) {
       return 1;
     }
-    print_message(STDOUT_FILENO, "Nothing wrong here\n");
+    
     // {
     //   file_descriptor = open(arguments->output_file_flag, O_WRONLY | O_TRUNC | O_CREAT | S_IRUSR | S_IWUSR);
     //   close(file_descriptor);
