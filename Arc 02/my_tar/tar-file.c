@@ -96,33 +96,33 @@ int Tar_file__get_file_type(Tar_file* this) {
 }
 
 //main function for testing above functions
-// int main() {
+// int main(int argc, char **argv) {
 //   Tar_file *t_file = create_tar_file();
 //   file_info file_1 = t_file_constructor();
 //   t_file_initialize(file_1);
-//   file_1 = get_file_info(file_1, "test-3.txt");
+//   file_1 = get_file_info(file_1, argv[1]);
 //   fill_tar_header(&t_file->header, file_1);
 
 //   FILE *file_ptr = fopen("tar-test2.txt", "w");
 //   fwrite(&t_file->header, 1, BLOCK_SIZE, file_ptr);
 //   fclose(file_ptr);
-  // printf("Entry Name: %s\n", t_file->header.name);
-  // printf("file mode: %s\n", t_file->header.mode);
-  // printf("uid: %s\n", t_file->header.uid);
-  // printf("gid: %s\n", t_file->header.gid);
-  // printf("size: %s\n", t_file->header.size);
-  // printf("modification time: %s\n", t_file->header.mtime);
-  // printf("Checksum: %s\n", t_file->header.chksum);
-  // printf("Typeflag: %c\n", t_file->header.typeflag);
-  // printf("Link Name: %s\n", t_file->header.linkname);
-  // printf("magic: %s\n", t_file->header.magic);
-  // printf("version: %s\n", t_file->header.version);
-  // printf("User name: %s\n", t_file->header.uname);
-  // printf("Group name: %s\n", t_file->header.gname);
-  // printf("Checksum: %s|\n", t_file->header.chksum);
-  // printf("major: %s\n", t_file->header.devmajor);
-  // printf("minor: %s\n", t_file->header.devminor);
-  // printf("prefix: %s\n", t_file->header.prefix);
+//   printf("Entry Name: %s\n", t_file->header.name);
+//   printf("file mode: %s\n", t_file->header.mode);
+//   printf("uid: %s\n", t_file->header.uid);
+//   printf("gid: %s\n", t_file->header.gid);
+//   printf("size: %s\n", t_file->header.size);
+//   printf("modification time: %s\n", t_file->header.mtime);
+//   printf("Checksum: %s\n", t_file->header.chksum);
+//   printf("Typeflag: %c\n", t_file->header.typeflag);
+//   printf("Link Name: %s\n", t_file->header.linkname);
+//   printf("magic: %s\n", t_file->header.magic);
+//   printf("version: %s\n", t_file->header.version);
+//   printf("User name: %s\n", t_file->header.uname);
+//   printf("Group name: %s\n", t_file->header.gname);
+//   printf("Checksum: %s|\n", t_file->header.chksum);
+//   printf("major: %s\n", t_file->header.devmajor);
+//   printf("minor: %s\n", t_file->header.devminor);
+//   printf("prefix: %s\n", t_file->header.prefix);
 
 //   t_file_destructor(file_1);
 //   Tar_file__free(t_file);

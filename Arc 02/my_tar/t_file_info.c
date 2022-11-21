@@ -89,6 +89,7 @@ file_info get_file_info(file_info this, char *filename) {
     }
     else if(S_ISDIR(filestat.st_mode)) {
       this->typeflag = DIRTYPE;
+      this->size = 0;
     }
     else if(S_ISFIFO(filestat.st_mode)) {
       this->typeflag = FIFOTYPE;
