@@ -21,3 +21,5 @@ void memory_copy(void* dest, void* src, int size);
 string_t get_str_slice(string_t str, int from, int to);
 char *reverse_string(char *input_string);
 char *octal_string(long int n, int string_size);
+int get_int_len(int n);
+int oct_2_dec(int octal);

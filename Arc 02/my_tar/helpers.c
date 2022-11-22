@@ -177,3 +177,27 @@ char *octal_string(long int n, int string_size) {
   free(octal);
   return octal_string;
 }
+
+int get_int_len(int n) {
+  int int_len = 1;
+
+  if(n < 0) {
+    n = -n;
+  }
+  while(n > 9) {
+    int_len++;
+    n = n / 10;
+  }
+  return int_len;
+}
+
+int oct_2_dec(int octal) {
+  int n_len = get_int_len(octal);
+  int dec = 0;
+
+  for(int i = 0; i < n_len; i++) {
+    dec += (octal % 10) * my_pow(8, i);
+    octal = octal / 10;
+  }
+  return dec;
+}
