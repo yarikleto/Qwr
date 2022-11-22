@@ -48,31 +48,55 @@ int read_file_contents(string_t content, char *filename, char *file_size) {
   return 0;
 }
 
-Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
+//Build a single doubly tar_file linked list node
+Tar_file *build_tar_file(Tar_file *this, char *filename, Tar_file *next, Tar_file *prev) {
   this = create_tar_file();
-
-  //Creates header from single filename only
-  create_header(&this->header, filenames->items[0]);
+  create_header(&this->header, filename);
   this->content = calloc(atoi(this->header.size)+1,sizeof(char));
-  read_file_contents(this->content, filenames->items[0], this->header.size);
+  read_file_contents(this->content, filename, this->header.size);
+  this->next_file = next;
+  this->prev_file = prev;
   return this;
+}
+
+//Build tar file linked list from array of valid filenames
+Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
+  Tar_file *files = NULL;
+  Tar_file *tail;
+  int i;
+  
+  files = build_tar_file(files, filenames->items[0], NULL, NULL);
+  tail = files;
+
+  for(i = 1; i < filenames->size; i++) {
+    tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
+    tail = tail->next_file;
+  }
+  tail = NULL;
+  return files;
 }
 
 int create_archive(char *tar_filename, Array *filenames) {
   return 0;
 }
 
+//main function for debugging above functions
 int main(int argc, char **argv) {
   char *tar_name;
   Array *filename = create_array();
   Tar_file *files;
+  
   if(argc < 3) {
     printf("ERROR: Must enter a tar name and file name\n");
     return 1;
   }
+  
   tar_name = strdup(argv[1]);
-  Array__push(filename, argv[2]);
+  for(int i = 2; i < argc; i++) {
+    Array__push(filename, argv[i]);
+  }
   files = load_from_filenames(files, filename);
+
   if(files->header.name[0] == '\0' || files->content[0] == '\0') {
     print_message(STDERR_FILENO, "Error: load from filename NOT sucessful\n");
   }
