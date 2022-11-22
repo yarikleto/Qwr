@@ -13,8 +13,9 @@ int create_header(tar_header_ptr tar_file_header, char *filename) {
   file_info f_info = t_file_constructor();
   t_file_initialize(f_info);
   f_info = get_file_info(f_info, filename);
-  if(fill_tar_header(tar_file_header, f_info) == 1) {
+  if(f_info->name[0] == '\0') {
     print_message(STDERR_FILENO, "Error creating header\n");
+    t_file_destructor(f_info);
     return 1;
   }
   t_file_destructor(f_info);
@@ -36,9 +37,8 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   this = create_tar_file();
 
   //Creates header from single filename only
-  if(create_header(&this->header, filenames->items[0]) > 0) {
-    Tar_file__free(this);
-  }
+  create_header(&this->header, filenames->items[0]);
+
   return this;
 }
 
@@ -49,7 +49,7 @@ int create_archive(char *tar_filename, Array *filenames) {
 int main(int argc, char **argv) {
   char *tar_name;
   Array *filename = create_array();
-  Tar_file *files;
+  Tar_file *files = NULL;
   if(argc < 3) {
     printf("ERROR: Must enter a tar name and file name\n");
     return 1;
@@ -57,15 +57,13 @@ int main(int argc, char **argv) {
   tar_name = strdup(argv[1]);
   Array__push(filename, argv[2]);
   files = load_from_filenames(files, filename);
-  // if(load_from_filenames(files, filename) != 1) {
-  //   print_message(STDOUT_FILENO, "load from filename successful!\n");
-  // }
-  // else {
-  //   print_message(STDERR_FILENO, "load from filename NOT sucessful\n");
-  //   return 1;
-  // }
+  if(files->header.name[0] != '\0') {
+    print_message(STDOUT_FILENO, "load from filename successful!\n");
+  }
+  else {
+    print_message(STDERR_FILENO, "load from filename NOT sucessful\n");
+  }
 
-  printf("%s\n", files->header.name);
   Tar_file__free(files);
   free(tar_name);
   Array__free(filename);
