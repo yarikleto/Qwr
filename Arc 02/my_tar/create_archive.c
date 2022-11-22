@@ -13,23 +13,38 @@ int create_header(tar_header_ptr tar_file_header, char *filename) {
   file_info f_info = t_file_constructor();
   t_file_initialize(f_info);
   f_info = get_file_info(f_info, filename);
+
   if(f_info->name[0] == '\0') {
     print_message(STDERR_FILENO, "Error creating header\n");
     t_file_destructor(f_info);
     return 1;
   }
+  fill_tar_header(tar_file_header, f_info);
   t_file_destructor(f_info);
   return 0;
 }
 
 int read_file_contents(string_t content, char *filename, char *file_size) {
   int size = atoi(file_size);
+  int content_to_read = size;
   int fd = open(filename, O_RDONLY);
+
   if(fd == -1) {
     print_message(STDERR_FILENO, "Error: cannot read file\n");
     return 1;
   }
 
+  if(size < 512) {
+    read(fd, content, 512);
+  }
+
+  while(content_to_read > 0) {
+    read(fd, content, content_to_read);
+    content_to_read -= 512;
+  }
+  //Debug: print contents stored in content
+  write(1, content, size);
+  write(1, "\n", 1);
   return 0;
 }
 
@@ -38,7 +53,8 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
 
   //Creates header from single filename only
   create_header(&this->header, filenames->items[0]);
-
+  this->content = calloc(atoi(this->header.size)+1,sizeof(char));
+  read_file_contents(this->content, filenames->items[0], this->header.size);
   return this;
 }
 
@@ -49,7 +65,7 @@ int create_archive(char *tar_filename, Array *filenames) {
 int main(int argc, char **argv) {
   char *tar_name;
   Array *filename = create_array();
-  Tar_file *files = NULL;
+  Tar_file *files;
   if(argc < 3) {
     printf("ERROR: Must enter a tar name and file name\n");
     return 1;
@@ -57,11 +73,11 @@ int main(int argc, char **argv) {
   tar_name = strdup(argv[1]);
   Array__push(filename, argv[2]);
   files = load_from_filenames(files, filename);
-  if(files->header.name[0] != '\0') {
-    print_message(STDOUT_FILENO, "load from filename successful!\n");
+  if(files->header.name[0] == '\0' || files->content[0] == '\0') {
+    print_message(STDERR_FILENO, "Error: load from filename NOT sucessful\n");
   }
   else {
-    print_message(STDERR_FILENO, "load from filename NOT sucessful\n");
+    print_message(STDOUT_FILENO, "load from filename successful!\n");
   }
 
   Tar_file__free(files);
