@@ -54,7 +54,7 @@ file_info get_file_info(file_info this, char *filename) {
   int stat_result = lstat(filename, &filestat);
 
   if(stat_result == -1) {
-    printf("Unable to get file properties\n");
+    printf("Error: unable to get file properties\n");
   }
   else {
     group_info = getgrgid(filestat.st_gid);

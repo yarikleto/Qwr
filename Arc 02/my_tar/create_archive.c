@@ -15,7 +15,7 @@ int create_header(tar_header_ptr tar_file_header, char *filename) {
   f_info = get_file_info(f_info, filename);
 
   if(f_info->name[0] == '\0') {
-    print_message(STDERR_FILENO, "Error creating header\n");
+    print_message(STDERR_FILENO, "Error: cannot create header\n");
     t_file_destructor(f_info);
     return 1;
   }
