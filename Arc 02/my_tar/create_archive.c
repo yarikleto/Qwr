@@ -90,6 +90,7 @@ int create_archive(char *tar_filename, Array *filenames) {
 //main function for debugging above functions
 int main(int argc, char **argv) {
   char *tar_name;
+  int load_success_flag = 0;
   Array *filename = create_array();
   Tar_file *files;
   
@@ -103,8 +104,15 @@ int main(int argc, char **argv) {
     Array__push(filename, argv[i]);
   }
   files = load_from_filenames(files, filename);
+  
+  //Check each node has properly loaded the Tar_file properties
+  for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file){
+    if(current_node->header.name[0] == '\0' || current_node->content[0] == '\0') {
+      load_success_flag = 1;
+    }
+  }
 
-  if(files->header.name[0] == '\0' || files->content[0] == '\0') {
+  if(load_success_flag > 0) {
     print_message(STDERR_FILENO, "Error: load from filename NOT sucessful\n");
   }
   else {
