@@ -23,3 +23,5 @@ char *reverse_string(char *input_string);
 char *octal_string(long int n, int string_size);
 int get_int_len(int n);
 int oct_2_dec(int octal);
+int my_recursive_pow(int base, int power);
+int my_atoi(char *param_1);
