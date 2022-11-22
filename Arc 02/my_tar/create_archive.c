@@ -25,7 +25,7 @@ int create_header(tar_header_ptr tar_file_header, char *filename) {
 }
 
 int read_file_contents(string_t content, char *filename, char *file_size) {
-  int size = atoi(file_size);
+  int size = oct_2_dec(atoi(file_size));
   int content_to_read = size;
   int fd = open(filename, O_RDONLY);
 
@@ -42,9 +42,10 @@ int read_file_contents(string_t content, char *filename, char *file_size) {
     read(fd, content, content_to_read);
     content_to_read -= 512;
   }
+
   //Debug: print contents stored in content
-  write(1, content, size);
-  write(1, "\n", 1);
+  // write(1, content, size);
+  // write(1, "\n", 1);
   return 0;
 }
 
@@ -63,6 +64,7 @@ Tar_file *build_tar_file(Tar_file *this, char *filename, Tar_file *next, Tar_fil
 Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   Tar_file *files = NULL;
   Tar_file *tail;
+  FILE *file_ptr = fopen("tar-test2.txt", "w");
   int i;
   
   files = build_tar_file(files, filenames->items[0], NULL, NULL);
@@ -73,6 +75,11 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
     tail = tail->next_file;
   }
   tail = NULL;
+
+  for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file) {
+    fwrite(current_node->content, 1, oct_2_dec(atoi(current_node->header.size)), file_ptr);
+  }
+  fclose(file_ptr);
   return files;
 }
 
