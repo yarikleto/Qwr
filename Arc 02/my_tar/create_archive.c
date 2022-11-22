@@ -25,7 +25,7 @@ int create_header(tar_header_ptr tar_file_header, char *filename) {
 }
 
 int read_file_contents(string_t content, char *filename, char *file_size) {
-  int size = oct_2_dec(atoi(file_size));
+  int size = oct_2_dec(my_atoi(file_size));
   int content_to_read = size;
   int fd = open(filename, O_RDONLY);
 
@@ -53,7 +53,7 @@ int read_file_contents(string_t content, char *filename, char *file_size) {
 Tar_file *build_tar_file(Tar_file *this, char *filename, Tar_file *next, Tar_file *prev) {
   this = create_tar_file();
   create_header(&this->header, filename);
-  this->content = calloc(atoi(this->header.size)+1,sizeof(char));
+  this->content = calloc(my_atoi(this->header.size)+1,sizeof(char));
   read_file_contents(this->content, filename, this->header.size);
   this->next_file = next;
   this->prev_file = prev;
@@ -77,7 +77,7 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   tail = NULL;
 
   for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file) {
-    fwrite(current_node->content, 1, oct_2_dec(atoi(current_node->header.size)), file_ptr);
+    fwrite(current_node->content, 1, oct_2_dec(my_atoi(current_node->header.size)), file_ptr);
   }
   fclose(file_ptr);
   return files;

@@ -201,3 +201,38 @@ int oct_2_dec(int octal) {
   }
   return dec;
 }
+
+int my_recursive_pow(int base, int power) {
+    int ans;
+    if(power == 0) {
+        return 1;
+    }
+
+    if(power == 1) {
+        ans = base;
+    }
+    else {
+        ans = base * my_recursive_pow(base, power - 1);
+    }
+    return ans;
+}
+
+int my_atoi(char *param_1) {
+    int integer = 0;
+    int sign = 1;
+    int int_len = strlen(param_1) - 1;
+
+    while(*param_1) {
+        if(*param_1 == '-') {
+            sign *= -1;
+            param_1++;
+            int_len--;
+        }
+        else {
+            integer += (*param_1 - '0') * my_recursive_pow(10, int_len);
+            param_1++;
+            int_len--;
+        }
+    }
+    return integer * sign;
+}
