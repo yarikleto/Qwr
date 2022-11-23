@@ -100,6 +100,9 @@ int main(int argc, char **argv) {
   
   //Check each node has properly loaded the Tar_file properties
   for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file){
+    if(current_node->header.typeflag == '5') {
+      continue;
+    }
     if(current_node->header.name[0] == '\0' || current_node->content[0] == '\0') {
       load_success_flag = 1;
     }
