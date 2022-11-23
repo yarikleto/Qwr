@@ -7,6 +7,7 @@
 #include "./helpers.h"
 #include "./tar-archive.h"
 #include "./tar-file.h"
+#include "./create_archive.h"
 
 int main (int argc, char** argv) {
   arguments_t* arguments = parse_arguments(argc, argv);
@@ -18,15 +19,24 @@ int main (int argc, char** argv) {
 
   //Tar mode: -c create a new archive
   if (arguments->create_flag) {
-    int file_descriptor;
+    // int file_descriptor;
     if(validate_filestat(arguments->included_files) > 0) {
       return 1;
     }
-    
+    create_archive(arguments->output_file_flag, arguments->included_files);
     // {
     //   file_descriptor = open(arguments->output_file_flag, O_WRONLY | O_TRUNC | O_CREAT | S_IRUSR | S_IWUSR);
     //   close(file_descriptor);
     // }
+  }
+
+  //Tar mode: -t List the contents in the archive
+  if(arguments->list_flag) {
+    Tar_archive *archive = read_archive(arguments->output_file_flag);
+    print_message(STDOUT_FILENO, archive->first_file->content);
+    print_message(STDOUT_FILENO, archive->first_file->header.block);
+    Tar_archive__free(archive);
+    // Tar_archive__print_files(archive);
   }
 
   //Tar mode: -x extract from the archive
