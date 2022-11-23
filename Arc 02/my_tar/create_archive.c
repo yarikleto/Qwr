@@ -5,7 +5,6 @@
 #include <fcntl.h>
 #include "./arguments.h"
 #include "./helpers.h"
-#include "./tar-archive.h"
 #include "./tar-file.h"
 #include "./t_file_info.h"
 
@@ -49,7 +48,7 @@ int read_file_contents(string_t content, char *filename, char *file_size) {
   return 0;
 }
 
-//Build a single doubly tar_file linked list node
+//Build one doubly linked list Tar_file node
 Tar_file *build_tar_file(Tar_file *this, char *filename, Tar_file *next, Tar_file *prev) {
   this = create_tar_file();
   create_header(&this->header, filename);
@@ -60,27 +59,21 @@ Tar_file *build_tar_file(Tar_file *this, char *filename, Tar_file *next, Tar_fil
   return this;
 }
 
-//Build tar file linked list from array of valid filenames
+//Build Tar_file linked list from array of valid filenames
 Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
-  Tar_file *files = NULL;
+  this = NULL;
   Tar_file *tail;
-  FILE *file_ptr = fopen("tar-test2.txt", "w");
   int i;
   
-  files = build_tar_file(files, filenames->items[0], NULL, NULL);
-  tail = files;
+  this = build_tar_file(this, filenames->items[0], NULL, NULL);
+  tail = this;
 
   for(i = 1; i < filenames->size; i++) {
     tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
     tail = tail->next_file;
   }
   tail = NULL;
-
-  for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file) {
-    fwrite(current_node->content, 1, oct_2_dec(my_atoi(current_node->header.size)), file_ptr);
-  }
-  fclose(file_ptr);
-  return files;
+  return this;
 }
 
 int create_archive(char *tar_filename, Array *filenames) {
@@ -116,6 +109,14 @@ int main(int argc, char **argv) {
     print_message(STDERR_FILENO, "Error: load from filename NOT sucessful\n");
   }
   else {
+    //Debug: write contents of each Tar_file node to a text file
+    char *output_text_file = "tar-test2.txt";
+    FILE *file_ptr = fopen(output_text_file, "w");
+    print_message(STDOUT_FILENO, "Printing Tar_file contents to file\n");
+    for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file) {
+      fwrite(current_node->content, 1, oct_2_dec(my_atoi(current_node->header.size)), file_ptr);
+    }
+    fclose(file_ptr);
     print_message(STDOUT_FILENO, "load from filename successful!\n");
   }
 
