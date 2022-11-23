@@ -75,56 +75,84 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   tail = NULL;
   return this;
 }
-
+//Create the archive
+//Note: Implementation does not archive files in subdirectories
 int create_archive(char *tar_filename, Array *filenames) {
+  int file_descriptor;
+  int content_size;
+  Tar_file *files = NULL;
+  char null_pad[512] = {0};
+
+  files = load_from_filenames(files, filenames);
+  file_descriptor = open(tar_filename, O_RDWR | O_CREAT, (S_IRWXU | S_IRGRP | S_IROTH));
+
+  //Write the tar header of the first file
+  write(file_descriptor, files->header.block, BLOCK_SIZE - 12);
+  write(file_descriptor, &null_pad, 12);
+
+  content_size = oct_2_dec(my_atoi(files->header.size));
+  
+  while(content_size > 0) {
+    if(content_size < BLOCK_SIZE) {
+      write(file_descriptor, files->content, content_size);
+      write(file_descriptor, null_pad, 512 - content_size);
+    }
+    else {
+      write(file_descriptor, files->content, BLOCK_SIZE);
+    }
+    content_size -= BLOCK_SIZE;
+  }
+
+  close(file_descriptor);
+  Tar_file__free(files);
   return 0;
 }
 
 //main function for debugging above functions
-int main(int argc, char **argv) {
-  char *tar_name;
-  int load_success_flag = 0;
-  Array *filename = create_array();
-  Tar_file *files;
+// int main(int argc, char **argv) {
+//   char *tar_name;
+//   int load_success_flag = 0;
+//   Array *filename = create_array();
+//   Tar_file *files;
   
-  if(argc < 3) {
-    printf("ERROR: Must enter a tar name and file name\n");
-    return 1;
-  }
+//   if(argc < 3) {
+//     printf("ERROR: Must enter a tar name and file name\n");
+//     return 1;
+//   }
   
-  tar_name = strdup(argv[1]);
-  for(int i = 2; i < argc; i++) {
-    Array__push(filename, argv[i]);
-  }
-  files = load_from_filenames(files, filename);
+//   tar_name = strdup(argv[1]);
+//   for(int i = 2; i < argc; i++) {
+//     Array__push(filename, argv[i]);
+//   }
+//   files = load_from_filenames(files, filename);
   
-  //Check each node has properly loaded the Tar_file properties
-  for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file){
-    if(current_node->header.typeflag == '5') {
-      continue;
-    }
-    if(current_node->header.name[0] == '\0' || current_node->content[0] == '\0') {
-      load_success_flag = 1;
-    }
-  }
+//   //Check each node has properly loaded the Tar_file properties
+//   for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file){
+//     if(current_node->header.typeflag == '5') {
+//       continue;
+//     }
+//     if(current_node->header.name[0] == '\0' || current_node->content[0] == '\0') {
+//       load_success_flag = 1;
+//     }
+//   }
 
-  if(load_success_flag > 0) {
-    print_message(STDERR_FILENO, "Error: load from filename NOT sucessful\n");
-  }
-  else {
-    //Debug: write contents of each Tar_file node to a text file
-    char *output_text_file = "tar-test2.txt";
-    FILE *file_ptr = fopen(output_text_file, "w");
-    print_message(STDOUT_FILENO, "Printing Tar_file contents to file\n");
-    for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file) {
-      fwrite(current_node->content, 1, oct_2_dec(my_atoi(current_node->header.size)), file_ptr);
-    }
-    fclose(file_ptr);
-    print_message(STDOUT_FILENO, "load from filename successful!\n");
-  }
+//   if(load_success_flag > 0) {
+//     print_message(STDERR_FILENO, "Error: load from filename NOT sucessful\n");
+//   }
+//   else {
+//     //Debug: write contents of each Tar_file node to a text file
+//     char *output_text_file = "tar-test2.txt";
+//     FILE *file_ptr = fopen(output_text_file, "w");
+//     print_message(STDOUT_FILENO, "Printing Tar_file contents to file\n");
+//     for(Tar_file *current_node = files; current_node != NULL; current_node = current_node->next_file) {
+//       fwrite(current_node->content, 1, oct_2_dec(my_atoi(current_node->header.size)), file_ptr);
+//     }
+//     fclose(file_ptr);
+//     print_message(STDOUT_FILENO, "load from filename successful!\n");
+//   }
 
-  Tar_file__free(files);
-  free(tar_name);
-  Array__free(filename);
-  return 0;
-}
+//   Tar_file__free(files);
+//   free(tar_name);
+//   Array__free(filename);
+//   return 0;
+// }
