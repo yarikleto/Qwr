@@ -44,8 +44,8 @@ int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info){
   memory_copy(tar_file_header->chksum, "        ", 8);
   tar_file_header->typeflag = f_info->typeflag;
   strncpy(tar_file_header->linkname, f_info->linkname, 100);
-  strncpy(tar_file_header->magic, f_info->magic, 6);
-  memory_copy(tar_file_header->version, "  ", 2);
+  memory_copy(tar_file_header->magic, "ustar ", 6);
+  strncpy(tar_file_header->version, " ", 2);
   strncpy(tar_file_header->uname, f_info->uname, 32);
   strncpy(tar_file_header->gname, f_info->gname, 32);
   strncpy(tar_file_header->devmajor, devmajor, 8);
