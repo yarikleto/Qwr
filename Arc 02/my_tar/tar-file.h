@@ -2,6 +2,7 @@
 
 #define BLOCK_SIZE 512
 #define SIZE_OF_FIELD_SIZE 12
+#define BLOCK_FACTOR 20
 
 #ifndef TAR_HEADER_T
 #define TAR_HEADER_T

@@ -81,7 +81,7 @@ int create_archive(char *tar_filename, Array *filenames) {
   int file_descriptor;
   int content_size;
   int num_512_blocks = 0;
-  // int index = 0;
+  int min_blk_factor = BLOCK_FACTOR;
   Tar_file *files = NULL;
   char null_pad[512] = {0};
 
@@ -111,9 +111,12 @@ int create_archive(char *tar_filename, Array *filenames) {
     }
     current_file->content = content_head;
   }
-  //Write padding bytes if tar file size < 10240 bytes
-  if(num_512_blocks < 20) {
-    for(int i = 0; i < 20 - num_512_blocks; i++) {
+  //Write padding bytes if tar file size is not a multiple of 10240 bytes
+  if((num_512_blocks % BLOCK_FACTOR) != 0) {
+    while(num_512_blocks > min_blk_factor) {
+      min_blk_factor += BLOCK_FACTOR;
+    }
+    for(int i = 0; i < (min_blk_factor % num_512_blocks); i++) {
       write(file_descriptor, null_pad, BLOCK_SIZE);
     }
   }
