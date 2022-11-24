@@ -85,7 +85,7 @@ int create_archive(char *tar_filename, Array *filenames) {
   char null_pad[512] = {0};
 
   files = load_from_filenames(files, filenames);
-  file_descriptor = open(tar_filename, O_RDWR | O_CREAT, (S_IRWXU | S_IRGRP | S_IROTH));
+  file_descriptor = open(tar_filename, O_RDWR | O_CREAT, ((S_IWUSR | S_IRUSR) | S_IRGRP | S_IROTH));
 
   for(Tar_file *current_file = files; current_file != NULL; current_file = current_file->next_file) {
     write(file_descriptor, current_file->header.block, BLOCK_SIZE - 12);
