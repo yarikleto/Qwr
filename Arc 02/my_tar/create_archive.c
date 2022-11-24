@@ -80,27 +80,38 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
 int create_archive(char *tar_filename, Array *filenames) {
   int file_descriptor;
   int content_size;
+  int num_512_blocks = 0;
   Tar_file *files = NULL;
   char null_pad[512] = {0};
 
   files = load_from_filenames(files, filenames);
   file_descriptor = open(tar_filename, O_RDWR | O_CREAT, (S_IRWXU | S_IRGRP | S_IROTH));
 
-  //Write the tar header of the first file
-  write(file_descriptor, files->header.block, BLOCK_SIZE - 12);
-  write(file_descriptor, &null_pad, 12);
-
-  content_size = oct_2_dec(my_atoi(files->header.size));
-  
-  while(content_size > 0) {
-    if(content_size < BLOCK_SIZE) {
-      write(file_descriptor, files->content, content_size);
-      write(file_descriptor, null_pad, 512 - content_size);
+  for(Tar_file *current_file = files; current_file != NULL; current_file = current_file->next_file) {
+    write(file_descriptor, current_file->header.block, BLOCK_SIZE - 12);
+    write(file_descriptor, &null_pad, 12);
+    num_512_blocks += 1;
+    content_size = oct_2_dec(my_atoi(current_file->header.size));
+    
+    //Write file contents in 512 byte blocks
+    while(content_size > 0) {
+      if(content_size < BLOCK_SIZE) {
+        write(file_descriptor, current_file->content, content_size);
+        write(file_descriptor, null_pad, 512 - content_size);
+        num_512_blocks += 1;
+      }
+      else {
+        write(file_descriptor, current_file->content, BLOCK_SIZE);
+        num_512_blocks += 1;
+      }
+      content_size -= BLOCK_SIZE;
     }
-    else {
-      write(file_descriptor, files->content, BLOCK_SIZE);
+  }
+  //Write padding bytes if tar file size < 10240 bytes
+  if(num_512_blocks < 20) {
+    for(int i = 0; i < 20 - num_512_blocks; i++) {
+      write(file_descriptor, null_pad, BLOCK_SIZE);
     }
-    content_size -= BLOCK_SIZE;
   }
 
   close(file_descriptor);
