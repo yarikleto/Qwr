@@ -7,6 +7,7 @@
 #include "./helpers.h"
 #include "./tar-file.h"
 #include "./t_file_info.h"
+#include "./dir_ops.h"
 
 int create_header(tar_header_ptr tar_file_header, char *filename) {
   file_info f_info = t_file_constructor();
@@ -72,8 +73,13 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   this = build_tar_file(this, filenames->items[0], NULL, NULL);
   tail = this;
 
+  if(this->header.typeflag == DIRTYPE) {
+    dirent_array *dir_entries = malloc(sizeof(dirent_array));
+    dir_entries = get_dir_entries(dir_entries, this->header.name, 0);
+    free_dirent_array(dir_entries);
+  }
+
   for(i = 1; i < filenames->size; i++) {
-    printf("code entered here 3\n");
     tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
     tail = tail->next_file;
   }
