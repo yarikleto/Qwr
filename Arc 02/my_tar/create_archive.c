@@ -53,7 +53,11 @@ Tar_file *build_tar_file(Tar_file *this, char *filename, Tar_file *next, Tar_fil
   this = create_tar_file();
   create_header(&this->header, filename);
   this->content = calloc(my_atoi(this->header.size)+1,sizeof(char));
-  read_file_contents(this->content, filename, this->header.size);
+
+  if(this->header.typeflag != SYMTYPE && this->header.typeflag != DIRTYPE) {
+    read_file_contents(this->content, filename, this->header.size);
+  }
+  
   this->next_file = next;
   this->prev_file = prev;
   return this;
@@ -69,6 +73,7 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   tail = this;
 
   for(i = 1; i < filenames->size; i++) {
+    printf("code entered here 3\n");
     tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
     tail = tail->next_file;
   }
@@ -78,7 +83,6 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
 
 //Create the archive
 //Note: Implementation does not archive files in subdirectories
-//Note: Implementation does not work with symbolic link files
 int create_archive(Tar_file *files, char *tar_filename){
   int file_descriptor;
   int content_size;
@@ -111,7 +115,7 @@ int create_archive(Tar_file *files, char *tar_filename){
     }
     current_file->content = content_head;
   }
-  printf("num_512_blocks: %d\n", num_512_blocks);
+
   //Write padding bytes if tar file size is not a multiple of 10240 bytes
   if((num_512_blocks % BLOCK_FACTOR) != 0) {
     while(num_512_blocks > min_blk_factor) {
