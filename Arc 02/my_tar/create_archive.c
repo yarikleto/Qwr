@@ -65,9 +65,17 @@ Tar_file *build_tar_file(Tar_file *this, char *filename, Tar_file *next, Tar_fil
 }
 
 //Build Tar_file linked list from directory entries
-// Tar_file *load_from_directory(Tar_file *this) {
-  
-// }
+Tar_file *load_from_directory(Tar_file *this) {
+  Tar_file *tail = this;
+  dirent_array *dir_entries = malloc(sizeof(dirent_array));
+  dir_entries = get_dir_entries(dir_entries, this->header.name, 0);
+  for(int i = 0; i < dir_entries->size; i++) {
+    tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
+    tail = tail->next_file;
+  }
+  free_dirent_array(dir_entries);
+  return this;
+}
 
 //Build Tar_file linked list from array of valid filenames
 Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
@@ -79,24 +87,12 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   tail = this;
 
   if(this->header.typeflag == DIRTYPE) {
-    dirent_array *dir_entries = malloc(sizeof(dirent_array));
-    dir_entries = get_dir_entries(dir_entries, this->header.name, 0);
-    for(int i = 0; i < dir_entries->size; i++) {
-      tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
-      tail = tail->next_file;
-    }
-    free_dirent_array(dir_entries);
+    this = load_from_directory(this);
   }
 
   for(i = 1; i < filenames->size; i++) {
     if(this->header.typeflag == DIRTYPE) {
-      dirent_array *dir_entries = malloc(sizeof(dirent_array));
-      dir_entries = get_dir_entries(dir_entries, this->header.name, 0);
-      for(int i = 0; i < dir_entries->size; i++) {
-        tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
-        tail = tail->next_file;
-      }
-      free_dirent_array(dir_entries);
+      this = load_from_directory(this);
     }
     tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
     tail = tail->next_file;
@@ -123,6 +119,7 @@ int create_archive(Tar_file *files, char *tar_filename){
     num_512_blocks += 1;
     content_size = oct_2_dec(my_atoi(current_file->header.size));
     char *content_head = current_file->content;
+    
     //Write file contents in 512 byte blocks
     while(content_size > 0) {
       if(content_size < BLOCK_SIZE) {
@@ -138,6 +135,12 @@ int create_archive(Tar_file *files, char *tar_filename){
       content_size -= BLOCK_SIZE;
     }
     current_file->content = content_head;
+  }
+
+  //Write end-of-archive blocks
+  for(int i = 0; i < 2; i++) {
+    write(file_descriptor, null_pad, BLOCK_SIZE);
+    num_512_blocks += 1;
   }
 
   //Write padding bytes if tar file size is not a multiple of 10240 bytes
