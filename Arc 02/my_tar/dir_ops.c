@@ -63,9 +63,10 @@ dirent_array *get_entries(char *dir_name, dirent_array *dirents, int aflag) {
   struct stat filestat;
   struct dirent *entry;
   DIR *folder = opendir(dir_name);
-  dirents->array = malloc(dirents->size * sizeof(dirent_entry *));
+  dirents->array = calloc(dirents->size + 1, sizeof(dirent_entry *));
 
   char *path = strdup(dir_name);
+  int file_path_len = strlen(path);
 
   while((entry = readdir(folder)) && index < dirents->size) {
     if(aflag == 0) {
@@ -84,12 +85,13 @@ dirent_array *get_entries(char *dir_name, dirent_array *dirents, int aflag) {
     }
 
     dirents->array[index] = malloc(sizeof(dirent_entry));
-    dirents->array[index]->entry_name = malloc(strlen(entry->d_name) + 1 *sizeof(char));
-    strcpy(dirents->array[index]->entry_name,entry->d_name);
-    
+    dirents->array[index]->entry_name = malloc(strlen(path) + 1 *sizeof(char));
+    strcpy(dirents->array[index]->entry_name,path);
+
     dirents->array[index]->t_sec = filestat.st_mtim.tv_sec;
     dirents->array[index]->t_nsec = filestat.st_mtim.tv_nsec;
     index++;
+    path[file_path_len] = '\0';
   }
 
   dirents = sort_entries(dirents, 1);
