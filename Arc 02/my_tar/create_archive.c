@@ -75,8 +75,10 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   tail = NULL;
   return this;
 }
+
 //Create the archive
 //Note: Implementation does not archive files in subdirectories
+//Note: Implementation does not work with symbolic link files
 int create_archive(Tar_file *files, char *tar_filename){
   int file_descriptor;
   int content_size;
@@ -109,12 +111,13 @@ int create_archive(Tar_file *files, char *tar_filename){
     }
     current_file->content = content_head;
   }
+  printf("num_512_blocks: %d\n", num_512_blocks);
   //Write padding bytes if tar file size is not a multiple of 10240 bytes
   if((num_512_blocks % BLOCK_FACTOR) != 0) {
     while(num_512_blocks > min_blk_factor) {
       min_blk_factor += BLOCK_FACTOR;
     }
-    for(int i = 0; i < (min_blk_factor % num_512_blocks); i++) {
+    for(int i = 0; i < (min_blk_factor - num_512_blocks); i++) {
       write(file_descriptor, null_pad, BLOCK_SIZE);
     }
   }

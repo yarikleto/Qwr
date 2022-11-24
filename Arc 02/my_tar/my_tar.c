@@ -20,7 +20,6 @@ int main (int argc, char** argv) {
 
   //Tar mode: -c create a new archive
   if (arguments->create_flag) {
-    // int file_descriptor;
     if(validate_filestat(arguments->included_files) > 0) {
       return 1;
     }
