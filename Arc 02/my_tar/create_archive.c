@@ -77,15 +77,13 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
 }
 //Create the archive
 //Note: Implementation does not archive files in subdirectories
-int create_archive(char *tar_filename, Array *filenames) {
+int create_archive(Tar_file *files, char *tar_filename){
   int file_descriptor;
   int content_size;
   int num_512_blocks = 0;
   int min_blk_factor = BLOCK_FACTOR;
-  Tar_file *files = NULL;
   char null_pad[512] = {0};
 
-  files = load_from_filenames(files, filenames);
   file_descriptor = open(tar_filename, O_RDWR | O_CREAT, 
                         ((S_IWUSR | S_IRUSR) | (S_IRGRP | S_IWGRP) | S_IROTH));
 
@@ -122,7 +120,6 @@ int create_archive(char *tar_filename, Array *filenames) {
   }
 
   close(file_descriptor);
-  Tar_file__free(files);
   return 0;
 }
 

@@ -11,6 +11,7 @@
 
 int main (int argc, char** argv) {
   arguments_t* arguments = parse_arguments(argc, argv);
+  Tar_file *files = NULL;
 
   if (validate_arguments(arguments, argc) > 0) {
     free_arguments(arguments);
@@ -23,11 +24,9 @@ int main (int argc, char** argv) {
     if(validate_filestat(arguments->included_files) > 0) {
       return 1;
     }
-    create_archive(arguments->output_file_flag, arguments->included_files);
-    // {
-    //   file_descriptor = open(arguments->output_file_flag, O_WRONLY | O_TRUNC | O_CREAT | S_IRUSR | S_IWUSR);
-    //   close(file_descriptor);
-    // }
+    files = load_from_filenames(files, arguments->included_files);
+    create_archive(files, arguments->output_file_flag);
+    Tar_file__free(files);
   }
 
   //Tar mode: -t List the contents in the archive
