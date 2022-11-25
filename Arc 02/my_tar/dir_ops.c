@@ -7,25 +7,11 @@
 #include <unistd.h>
 #include "dir_ops.h"
 
-//Implement: Sort entries by tv_sec and tv_nsec
 //Sort dirent_array entries
 dirent_array *sort_entries(dirent_array *dirents, int tflag) {
   int i = 1;
   int j; 
   dirent_entry *temp_ptr;
-  
-  //sort entry names alphabetically
-  // while(i < dirents->size) {
-  //   j = i;
-  //   while(j > 0 && (strcmp(dirents->array[j-1]->entry_name,
-  //          dirents->array[j]->entry_name) > 0)){
-  //     temp_ptr = dirents->array[j];
-  //     dirents->array[j] = dirents->array[j-1];
-  //     dirents->array[j-1] = temp_ptr;
-  //     j--;
-  //   }
-  //   i++;
-  // }
 
   //Sort by time modified (recent to latest)
   if(tflag == 1) {
@@ -40,17 +26,6 @@ dirent_array *sort_entries(dirent_array *dirents, int tflag) {
       }
       i++;
     }
-    // i = 1;
-    // while(i < dirents->size) {
-    //   j = i;
-    //   while(j > 0 && dirents->array[j-1]->t_sec < dirents->array[j]->t_sec) {
-    //     temp_ptr = dirents->array[j];
-    //     dirents->array[j] = dirents->array[j-1];
-    //     dirents->array[j-1] = temp_ptr;
-    //     j--;
-    //   }
-    //   i++;
-    // }
   }
   
   return dirents;

@@ -119,36 +119,6 @@ file_info get_file_info(file_info this, char *filename) {
     }
 
   }
-  //Print t_file_info fields
-  // if(stat_result != -1) {
-  //   printf("Entry Name: %s\n", this->name);
-  //   printf("file mode: %lo\n", this->mode);
-  //   printf("uid: %o\n", this->uid);
-  //   printf("gid: %o\n", this->gid);
-  //   printf("size: %lo\n", this->size);
-  //   printf("modification time: %lo\n", this->mtime);
-  //   printf("Typeflag: %c\n", this->typeflag);
-  //   printf("Link Name: %s\n", this->linkname);
-  //   printf("magic: %s\n", this->magic);
-  //   printf("version: %s\n", this->version);
-  //   printf("User name: %s\n", this->uname);
-  //   printf("Group name: %s\n", this->gname);
-  //   printf("dev: %lo\n", (dev_t)filestat.st_rdev);
-  //   printf("major: %o\n", this->devmajor);
-  //   printf("minor: %o\n", this->devminor);
-  // printf("checksum in octal: %lo\n", this->chksum);
-  // printf("st_mode & S_IFMT: %d\n", filestat.st_mode & S_IFMT);
-
-    //File type bitmask values
-    // printf("S_IFMT: %d\n", S_IFMT);
-    // printf("S_IFSOCK: %d\n", S_IFSOCK);
-    // printf("S_IFLNK: %d\n", S_IFLNK);
-    // printf("S_IFREG: %d\n", S_IFREG);
-    // printf("S_IBLK: %d\n", S_IFBLK);
-    // printf("S_IDIR: %d\n", S_IFDIR);
-    // printf("S_ICHR: %d\n", S_IFCHR);
-    // printf("S_IFIFO: %d\n", S_IFIFO);
-  // }
 
   return this;
 }

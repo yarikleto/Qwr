@@ -1,3 +1,13 @@
+#Summary of test cases:
+# 1. 3 regular files; tar file size = 10240 bytes
+# 2. 4 regular files; tar file size = 20480 bytes
+# 3. 1 regular file, 1 hardlink file, 1 symbolic link file
+# 4. 1 directory
+# 5. 1 regular file and 1 directory
+# 6. 1 directory and 1 regular file
+# 7. 1 directory and 2 regular files
+# 8. 2 directories
+
 #First test case: 3 regular files; tar file size = 10240 bytes
 echo DELETING CREATE_ARCHIVE.TAR, TAR1.TAR, CREATE_ARCHIVE.TXT, TAR1.TXT
 rm create_archive.tar
