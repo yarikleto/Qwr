@@ -82,49 +82,93 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   this = NULL;
   Tar_file *tail;
   int i;
-   
-  // char files_array[2] = {filenames->items[0], filenames->items[1]};
-  
+  //debug: print Array *filenames contents
   printf("filenames:\n");
   for(int i = 0; i < filenames->size; i++) {
     printf("%d: %s\n", i, filenames->items[i]);
+  }
+  //BUG: directory names after the first element in filenames disappears after
+  //the first Tar_file node is created. This code block copies non-directory 
+  //filename elements and directory filename elements after the 0th index and 
+  //copies a pointer to directory filename elements in the 0th index
+  Array *copy = create_array();
+  copy->size = filenames->size;
+  copy->items = malloc(copy->size * sizeof(char *));
+  int *not_malloc = malloc(copy->size * sizeof(int));
+  for(int i = 0; i < copy->size; i++) {
+    copy->items[i] = malloc(strlen(filenames->items[i]) + 1 * sizeof(char));
+    
+    if(check_dir(filenames->items[i]) == 0 && i == 0) {
+      free(copy->items[i]);
+      copy->items[i] = filenames->items[i];
+      not_malloc[i] = 0;
+    }
+    else {
+      copy->items[i] = strcpy(copy->items[i], filenames->items[i]);
+      not_malloc[i] = 1;
+    }
+
+    printf("copied item %d: %s\n", i, copy->items[i]);
   }
 
   this = build_tar_file(this, filenames->items[0], NULL, NULL);
   tail = this;
   
-  printf("filenames after building first tar_file:\n");
-  for(int i = 0; i < filenames->size; i++) {
-    printf("%d: %s\n", i, filenames->items[i]);
+  printf("copied names after building first tar_file:\n");
+  for(int i = 0; i < copy->size; i++) {
+    printf("%d: %s\n", i, copy->items[i]);
   }
 
   if(this->header.typeflag == DIRTYPE) {
     printf("1 Code entered here\n");
     printf("filename (this->header.name): %s\n", this->header.name);
-    load_from_directory(this);
+    dirent_array *dir_entries = malloc(sizeof(dirent_array));
+    dir_entries = get_dir_entries(dir_entries, this->header.name, 0);
+    for(int i = 0; i < dir_entries->size; i++) {
+      tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
+      tail = tail->next_file;
+    }
+    free_dirent_array(dir_entries);
   }
   
-  for(i = 1; i < filenames->size; i++) {
-    printf("filename at start of for loop: %s\n", filenames->items[i]);
-    if(check_dir(filenames->items[i]) == 0) {
+  for(i = 1; i < copy->size; i++) {
+    printf("filename at start of for loop: %s\n", copy->items[i]);
+    if(check_dir(copy->items[i]) == 0) {
       printf("2 Code entered here\n");
-      tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
+      tail->next_file = build_tar_file(tail->next_file, copy->items[i], NULL, tail);
       tail = tail->next_file;
-      load_from_directory(tail);
+      
+      dirent_array *dir_entries = malloc(sizeof(dirent_array));
+      dir_entries = get_dir_entries(dir_entries, tail->header.name, 0);
+      for(int i = 0; i < dir_entries->size; i++) {
+      tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
+      tail = tail->next_file;
+      }
+      free_dirent_array(dir_entries);
       continue;
     }
     printf("3 Code entered here\n");
-    printf("filenames->items: %s\n", filenames->items[i]);
-    tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
+    printf("copy->items: %s\n", copy->items[i]);
+    tail->next_file = build_tar_file(tail->next_file, copy->items[i], NULL, tail);
     tail = tail->next_file;
   }
 
   //Debug: print the linked list header names
-  // for(Tar_file *current_file = this; current_file != NULL; current_file = current_file->next_file) {
-  //   printf("%s\n", current_file->header.name);
-  // }
+  printf("Linked list header:\n");
+  for(Tar_file *current_file = this; current_file != NULL; current_file = current_file->next_file) {
+    printf("%s\n", current_file->header.name);
+  }
+
   tail = NULL;
-  // Array__free(filenames_copy);
+  for(int i = 0; i < copy->size; i++) {
+    if(not_malloc[i] == 1) {
+      free(copy->items[i]);
+    }
+  }
+  free(not_malloc);
+  free(copy->items);
+  free(copy);
+  printf("End free\n");
   return this;
 }
 

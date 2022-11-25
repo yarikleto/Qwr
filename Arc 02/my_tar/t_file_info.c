@@ -101,10 +101,13 @@ file_info get_file_info(file_info this, char *filename) {
     
     //Set name field
     if(this->typeflag == DIRTYPE) {
+      char *new_filename = calloc(strlen(filename) + 2, sizeof(char));
       if(filename[strlen(filename)-1] != '/') {
-        strcat(filename, "/");
+        new_filename = strcpy(new_filename, filename);
+        strcat(new_filename, "/");
       }
-      this->name = strcpy(this->name, filename);
+      this->name = strcpy(this->name, new_filename);
+      free(new_filename);
     }
     else {
       this->name = strcpy(this->name, filename);
