@@ -85,18 +85,38 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   
   this = build_tar_file(this, filenames->items[0], NULL, NULL);
   tail = this;
-
+  
   if(this->header.typeflag == DIRTYPE) {
-    this = load_from_directory(this);
+    dirent_array *dir_entries = malloc(sizeof(dirent_array));
+    dir_entries = get_dir_entries(dir_entries, this->header.name, 0);
+    for(int i = 0; i < dir_entries->size; i++) {
+      tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
+      tail = tail->next_file;
+    }
+    free_dirent_array(dir_entries);
   }
 
   for(i = 1; i < filenames->size; i++) {
-    if(this->header.typeflag == DIRTYPE) {
-      this = load_from_directory(this);
+    if(check_dir(filenames->items[i]) == 0) {
+      tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
+      tail = tail->next_file;
+      dirent_array *dir_entries = malloc(sizeof(dirent_array));
+      dir_entries = get_dir_entries(dir_entries, tail->header.name, 0);
+      for(int i = 0; i < dir_entries->size; i++) {
+        tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
+        tail = tail->next_file;
+      }
+      free_dirent_array(dir_entries);
+      continue;
     }
     tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
     tail = tail->next_file;
   }
+
+  //Debug: print the linked list header names
+  // for(Tar_file *current_file = this; current_file != NULL; current_file = current_file->next_file) {
+  //   printf("%s\n", current_file->header.name);
+  // }
   tail = NULL;
   return this;
 }
@@ -119,7 +139,7 @@ int create_archive(Tar_file *files, char *tar_filename){
     num_512_blocks += 1;
     content_size = oct_2_dec(my_atoi(current_file->header.size));
     char *content_head = current_file->content;
-    
+
     //Write file contents in 512 byte blocks
     while(content_size > 0) {
       if(content_size < BLOCK_SIZE) {

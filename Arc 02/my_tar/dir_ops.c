@@ -145,6 +145,19 @@ dirent_array *get_dir_entries(dirent_array *entry_array, char *dir_name, int afl
   return entry_array;
 }
 
+int check_dir(char *directory) {
+  DIR *dir = opendir(directory);
+  
+  if(dir == NULL) {
+    closedir(dir);
+    return 1;
+  }
+  else {
+    closedir(dir);
+    return 0;
+  }
+}
+
 void free_dirent_array(dirent_array *dirents) {
   for(int i = 0; i < dirents->size; i++) {
     free(dirents->array[i]->entry_name);

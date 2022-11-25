@@ -31,6 +31,9 @@ int count_entries(char *dir_name, int aflag);
 //sort the dirents, and print the dirent names 
 dirent_array *get_dir_entries(dirent_array *entry_array, char *dir_name, int aflag);
 
+//Check if a directory is found
+int check_dir(char *directory);
+
 //free dirent_array
 void free_dirent_array(dirent_array *dirents);
 
