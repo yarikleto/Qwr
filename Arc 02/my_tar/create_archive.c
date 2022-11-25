@@ -82,11 +82,8 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   this = NULL;
   Tar_file *tail;
   int i;
-  Array *filenames_copy = malloc(sizeof(Array));
-  filenames_copy->size = filenames->size;
-  for(int i = 0; i < filenames->size; i++) {
-    filenames_copy->items[i] = strdup(filenames->items[i]);
-  }
+   
+  // char files_array[2] = {filenames->items[0], filenames->items[1]};
   
   printf("filenames:\n");
   for(int i = 0; i < filenames->size; i++) {
@@ -104,13 +101,7 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   if(this->header.typeflag == DIRTYPE) {
     printf("1 Code entered here\n");
     printf("filename (this->header.name): %s\n", this->header.name);
-    dirent_array *dir_entries = malloc(sizeof(dirent_array));
-    dir_entries = get_dir_entries(dir_entries, this->header.name, 0);
-    for(int i = 0; i < dir_entries->size; i++) {
-      tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
-      tail = tail->next_file;
-    }
-    free_dirent_array(dir_entries);
+    load_from_directory(this);
   }
   
   for(i = 1; i < filenames->size; i++) {
@@ -119,13 +110,7 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
       printf("2 Code entered here\n");
       tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
       tail = tail->next_file;
-      dirent_array *dir_entries = malloc(sizeof(dirent_array));
-      dir_entries = get_dir_entries(dir_entries, tail->header.name, 0);
-      for(int i = 0; i < dir_entries->size; i++) {
-        tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
-        tail = tail->next_file;
-      }
-      free_dirent_array(dir_entries);
+      load_from_directory(tail);
       continue;
     }
     printf("3 Code entered here\n");
@@ -139,7 +124,7 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   //   printf("%s\n", current_file->header.name);
   // }
   tail = NULL;
-  Array__free(filenames_copy);
+  // Array__free(filenames_copy);
   return this;
 }
 
