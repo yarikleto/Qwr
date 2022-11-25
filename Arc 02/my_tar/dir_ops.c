@@ -75,13 +75,13 @@ dirent_array *get_entries(char *dir_name, dirent_array *dirents, int aflag) {
       }
     }
     
-    if(strcmp(dir_name, ".") != 0) {
-      path = realloc(path, strlen(path) + strlen(entry->d_name)+1);
+    if(strcmp(path, ".") != 0) {
+      path = realloc(path, strlen(path) + strlen(entry->d_name) + 1 * sizeof(char));
       strcat(path, entry->d_name);
-      stat(path, &filestat);
+      lstat(entry->d_name, &filestat);
     }
     else {
-      stat(entry->d_name, &filestat);
+      lstat(entry->d_name, &filestat);
     }
 
     dirents->array[index] = malloc(sizeof(dirent_entry));

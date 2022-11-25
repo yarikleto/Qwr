@@ -82,11 +82,28 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   this = NULL;
   Tar_file *tail;
   int i;
+  Array *filenames_copy = malloc(sizeof(Array));
+  filenames_copy->size = filenames->size;
+  for(int i = 0; i < filenames->size; i++) {
+    filenames_copy->items[i] = strdup(filenames->items[i]);
+  }
   
+  printf("filenames:\n");
+  for(int i = 0; i < filenames->size; i++) {
+    printf("%d: %s\n", i, filenames->items[i]);
+  }
+
   this = build_tar_file(this, filenames->items[0], NULL, NULL);
   tail = this;
   
+  printf("filenames after building first tar_file:\n");
+  for(int i = 0; i < filenames->size; i++) {
+    printf("%d: %s\n", i, filenames->items[i]);
+  }
+
   if(this->header.typeflag == DIRTYPE) {
+    printf("1 Code entered here\n");
+    printf("filename (this->header.name): %s\n", this->header.name);
     dirent_array *dir_entries = malloc(sizeof(dirent_array));
     dir_entries = get_dir_entries(dir_entries, this->header.name, 0);
     for(int i = 0; i < dir_entries->size; i++) {
@@ -95,9 +112,11 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
     }
     free_dirent_array(dir_entries);
   }
-
+  
   for(i = 1; i < filenames->size; i++) {
+    printf("filename at start of for loop: %s\n", filenames->items[i]);
     if(check_dir(filenames->items[i]) == 0) {
+      printf("2 Code entered here\n");
       tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
       tail = tail->next_file;
       dirent_array *dir_entries = malloc(sizeof(dirent_array));
@@ -109,6 +128,8 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
       free_dirent_array(dir_entries);
       continue;
     }
+    printf("3 Code entered here\n");
+    printf("filenames->items: %s\n", filenames->items[i]);
     tail->next_file = build_tar_file(tail->next_file, filenames->items[i], NULL, tail);
     tail = tail->next_file;
   }
@@ -118,6 +139,7 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   //   printf("%s\n", current_file->header.name);
   // }
   tail = NULL;
+  Array__free(filenames_copy);
   return this;
 }
 
