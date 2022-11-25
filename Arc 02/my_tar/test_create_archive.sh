@@ -56,3 +56,30 @@ echo DIFF TAR1.TXT AND CREATE_ARCHIVE.TXT
 diff tar1.txt create_archive.txt
 echo TEST CASE 4 COMPLETE
 
+#Fifth test case: 1 regular file and 1 directory 
+echo TEST CASE 5: tar1.tar test-3.txt test_folder
+rm create_archive.tar
+rm tar1.tar
+rm create_archive.txt
+rm tar1.txt
+tar -cf tar1.tar test-3.txt test_folder
+./my_tar -cf create_archive.tar test-3.txt test_folder 
+cat -e tar1.tar > tar1.txt
+cat -e create_archive.tar > create_archive.txt
+echo DIFF TAR1.TXT AND CREATE_ARCHIVE.TXT
+diff tar1.txt create_archive.txt
+echo TEST CASE 5 COMPLETE
+
+#Sixth test case: 1 directory and 1 regular file
+echo TEST CASE 6: tar1.tar test_folder test-3.txt
+rm create_archive.tar
+rm tar1.tar
+rm create_archive.txt
+rm tar1.txt
+tar -cf tar1.tar test_folder test-3.txt
+./my_tar -cf create_archive.tar test_folder test-3.txt
+cat -e tar1.tar > tar1.txt
+cat -e create_archive.tar > create_archive.txt
+echo DIFF TAR1.TXT AND CREATE_ARCHIVE.TXT
+diff tar1.txt create_archive.txt
+echo TEST CASE 6 COMPLETE
