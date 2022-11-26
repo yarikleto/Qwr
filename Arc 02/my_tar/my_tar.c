@@ -8,6 +8,7 @@
 #include "./tar-archive.h"
 #include "./tar-file.h"
 #include "./create_archive.h"
+#include "./append_archive.h"
 
 int main (int argc, char** argv) {
   arguments_t* arguments = parse_arguments(argc, argv);
@@ -40,12 +41,7 @@ int main (int argc, char** argv) {
 
   //Tar mode: -r Append new entries to the archive
   if (arguments->append_flag) {
-    if(arguments->included_files->items == NULL) {
-      free_arguments(arguments);
-      return 0;
-    }
-    printf("tar mode -r entered here\n");
-    //check_tar_file(arguments->included_files[0]);
+    append_archive(arguments->output_file_flag, arguments->included_files);
   }
 
   //Tar mode: -x extract file from the archive
