@@ -54,5 +54,13 @@ int append_archive(char *tar_filename, Array *filenames) {
     Tar_archive__free(tar_archive);
   }
 
+  else if(filenames->items == NULL && in_directory(tar_filename) == 0) {
+    Tar_archive *tar_archive = read_archive(tar_filename);
+    if(tar_archive == NULL) {
+      print_message(STDERR_FILENO, "my_tar: This does not look like a tar archive\n");
+      print_message(STDERR_FILENO, "my_tar: Exiting with failure status due to previous errors\n");
+    }
+  }
+  
   return 0;
 }
