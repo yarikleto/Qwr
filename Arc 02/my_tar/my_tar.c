@@ -29,20 +29,13 @@ int main (int argc, char** argv) {
   }
 
   //Tar mode: -t List the contents in the archive
-  if(arguments->list_flag) {
-    Tar_archive *archive = read_archive(arguments->output_file_flag);
-    print_message(STDOUT_FILENO, archive->first_file->content);
-    print_message(STDOUT_FILENO, archive->first_file->header.block);
-    Tar_archive__free(archive);
-    // Tar_archive__print_files(archive);
-  }
-
-  //Tar mode: -x extract from the archive
   if (arguments->list_flag) {
     Tar_archive* tar_archive = read_archive(arguments->output_file_flag);
-    if (tar_archive == NULL) return 1;
-
+    if (tar_archive == NULL){
+      return 1;
+    }
     Tar_archive__print_files(tar_archive);
+    Tar_archive__free(tar_archive);
   }
 
   //Tar mode: -x extract file from the archive
