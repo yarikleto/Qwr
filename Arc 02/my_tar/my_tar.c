@@ -46,6 +46,9 @@ int main (int argc, char** argv) {
 
   //Tar mode: -u Append new entry only if it is newer than its 
   //corresponding archive member of the same name
+  if (arguments->update_flag) {
+    update_archive(arguments->output_file_flag, arguments->included_files);
+  }
 
   //Tar mode: -x extract file from the archive
   if (arguments->extract_flag) {

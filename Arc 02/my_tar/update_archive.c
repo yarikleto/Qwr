@@ -64,3 +64,7 @@ int append_archive(char *tar_filename, Array *filenames) {
   
   return 0;
 }
+
+int update_archive(char *tar_filename, Array *filenames) {
+  
+}

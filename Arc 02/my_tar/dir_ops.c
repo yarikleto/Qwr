@@ -115,8 +115,6 @@ dirent_array *get_dir_entries(dirent_array *entry_array, char *dir_name, int afl
   entry_array->size = count_entries(dir_name, aflag);
   entry_array = get_entries(dir_name, entry_array, aflag);
 
-  //Debug: print the directory entries
-  // print_entries(entry_array);
   return entry_array;
 }
 
