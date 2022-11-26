@@ -33,6 +33,9 @@ int main (int argc, char** argv) {
   if (arguments->list_flag) {
     Tar_archive* tar_archive = read_archive(arguments->output_file_flag);
     if (tar_archive == NULL){
+      print_message(STDERR_FILENO, "my_tar: This does not look like a tar archive\n");
+      print_message(STDERR_FILENO, "my_tar: Exiting with failure status due to previous errors\n");
+      free_arguments(arguments);
       return 1;
     }
     Tar_archive__print_files(tar_archive);
