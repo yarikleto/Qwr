@@ -11,9 +11,10 @@
 Tar_archive* read_archive(string_t filename) {
   int file_descriptor = open(filename, O_RDONLY);
   if (file_descriptor < 0) {
-    print_message(STDOUT_FILENO, "my_tar: Error opening archive: Failed to open '");
+    print_message(STDOUT_FILENO, "my_tar: ");
     print_message(STDOUT_FILENO, filename);
-    print_message(STDOUT_FILENO, "'\n");
+    print_message(STDOUT_FILENO, ": Cannot open: No such file or directory\n");
+    print_message(STDOUT_FILENO, "my_tar: Error is not recoverable: exiting now\n");
     return NULL;
   }
 

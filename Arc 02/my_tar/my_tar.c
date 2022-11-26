@@ -18,7 +18,7 @@ int main (int argc, char** argv) {
     return 1;
   }
 
-  //Tar mode: -c create a new archive
+  //Tar mode: -c Create a new archive
   if (arguments->create_flag) {
     if(validate_filestat(arguments->included_files) > 0) {
       return 1;
@@ -38,11 +38,22 @@ int main (int argc, char** argv) {
     Tar_archive__free(tar_archive);
   }
 
+  //Tar mode: -r Append new entries to the archive
+  if (arguments->append_flag) {
+    if(arguments->included_files->items == NULL) {
+      free_arguments(arguments);
+      return 0;
+    }
+    printf("tar mode -r entered here\n");
+    //check_tar_file(arguments->included_files[0]);
+  }
+
   //Tar mode: -x extract file from the archive
   if (arguments->extract_flag) {
     Tar_archive* tar_archive = read_archive(arguments->output_file_flag);
-    if (tar_archive == NULL) return 1;
-
+    if (tar_archive == NULL) {
+      return 1;
+    }
     // !!!! For the debug purpose
     int file_descriptor = open("saved-debug-archive.tar", O_WRONLY | O_TRUNC | O_CREAT | S_IRWXU);
     Tar_archive__save(tar_archive, file_descriptor);
