@@ -29,3 +29,11 @@ tar -rf append_test.tar array.h
 echo DIFF APPEND_TEST AND MY_APPEND_TEST
 diff append_test.tar my_append_test.tar
 echo TEST CASE 3 COMPLETE
+
+#4. Append new entries to existing tar file
+echo TEST CASE 4: APPEND NEW ENTRIES TO EXISTING TAR FILE
+tar -rf append_test.tar tar-file.c
+./my_tar -rf my_append_test.tar tar-file.c
+echo DIFF APPEND_TEST AND MY_APPEND_TEST
+diff append_test.tar my_append_test.tar
+echo TEST CASE 4 COMPLETE
