@@ -60,6 +60,7 @@ int append_archive(char *tar_filename, Array *filenames) {
       print_message(STDERR_FILENO, "my_tar: This does not look like a tar archive\n");
       print_message(STDERR_FILENO, "my_tar: Exiting with failure status due to previous errors\n");
     }
+    Tar_archive__free(tar_archive);
   }
   
   return 0;
