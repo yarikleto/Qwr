@@ -74,7 +74,7 @@ Tar_file *load_from_directory(Tar_file *this) {
     tail = tail->next_file;
   }
   free_dirent_array(dir_entries);
-  return this;
+  return tail;
 }
 
 //Build Tar_file linked list from array of valid filenames
@@ -109,27 +109,14 @@ Tar_file *load_from_filenames(Tar_file *this, Array *filenames) {
   tail = this;
   
   if(this->header.typeflag == DIRTYPE) {
-    dirent_array *dir_entries = malloc(sizeof(dirent_array));
-    dir_entries = get_dir_entries(dir_entries, this->header.name, 0);
-    for(int i = 0; i < dir_entries->size; i++) {
-      tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
-      tail = tail->next_file;
-    }
-    free_dirent_array(dir_entries);
+    tail = load_from_directory(tail);
   }
   
   for(i = 1; i < copy->size; i++) {
     if(check_dir(copy->items[i]) == 0) {
       tail->next_file = build_tar_file(tail->next_file, copy->items[i], NULL, tail);
       tail = tail->next_file;
-      
-      dirent_array *dir_entries = malloc(sizeof(dirent_array));
-      dir_entries = get_dir_entries(dir_entries, tail->header.name, 0);
-      for(int i = 0; i < dir_entries->size; i++) {
-      tail->next_file = build_tar_file(tail->next_file, dir_entries->array[i]->entry_name, NULL, tail);
-      tail = tail->next_file;
-      }
-      free_dirent_array(dir_entries);
+      tail = load_from_directory(tail);
       continue;
     }
 
