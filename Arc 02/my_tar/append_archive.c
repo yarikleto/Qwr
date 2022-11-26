@@ -25,15 +25,19 @@ int append_archive(char *tar_filename, Array *filenames) {
     close(file_descriptor);
     return 0;
   }
-
-  //Check if tar_filename is in current directory
-  if(in_directory(tar_filename) > 0) {
-    printf("%s in directory\n", tar_filename);
+  //Create a new archive if the tar_file doesn't exist and input files are provided
+  else if(filenames->items != NULL && in_directory(tar_filename) > 0) {
+    Tar_file *files = NULL;
+    files = load_from_filenames(files, filenames);
+    create_archive(files, tar_filename);
+    Tar_file__free(files);
   }
 
-  printf("tar mode -r entered here\n");
-  printf("tar filename: %s\n", tar_filename);
-  printf("first filename: %s\n", filenames->items[0]);
-  //check_tar_file(arguments->included_files[0]);
+  //Add new entries to the Tar_file linked list and create a new archive
+  else if(filenames->items != NULL && in_directory(tar_filename) == 0) {
+    Tar_archive *tar_archive = read_archive(tar_filename);
+    
+  }
+
   return 0;
 }
