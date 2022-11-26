@@ -173,6 +173,18 @@ int validate_arguments(arguments_t* arguments, int argc) {
     }
   }
 
+  if (arguments->append_flag && !arguments->output_file_flag) {
+    print_message(STDERR_FILENO, "tar: Option -r also requires -f option\n");
+    free(arguments->output_file_flag);
+    return 1;
+  }
+
+  if (arguments->update_flag && !arguments->output_file_flag) {
+    print_message(STDERR_FILENO, "tar: Option -r also requires -f option\n");
+    free(arguments->output_file_flag);
+    return 1;
+  }
+
   if (arguments->list_flag && !arguments->output_file_flag) {
     print_message(STDERR_FILENO, "tar: Option -t also requires -f option\n");
     free(arguments->output_file_flag);
