@@ -8,7 +8,7 @@
 #include "./tar-archive.h"
 #include "./tar-file.h"
 #include "./create_archive.h"
-#include "./append_archive.h"
+#include "./update_archive.h"
 
 int main (int argc, char** argv) {
   arguments_t* arguments = parse_arguments(argc, argv);
@@ -43,6 +43,9 @@ int main (int argc, char** argv) {
   if (arguments->append_flag) {
     append_archive(arguments->output_file_flag, arguments->included_files);
   }
+
+  //Tar mode: -u Append new entry only if it is newer than its 
+  //corresponding archive member of the same name
 
   //Tar mode: -x extract file from the archive
   if (arguments->extract_flag) {

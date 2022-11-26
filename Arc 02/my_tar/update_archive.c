@@ -47,10 +47,9 @@ int append_archive(char *tar_filename, Array *filenames) {
       current_file = current_file->next_file;
     }
 
-    new_entries->prev_file = last_file;    
+    new_entries->prev_file = last_file;
     last_file->next_file = new_entries;
     create_archive(tar_archive->first_file, tar_filename);
-
     Tar_archive__free(tar_archive);
   }
 

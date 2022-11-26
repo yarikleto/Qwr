@@ -43,9 +43,6 @@ int read_file_contents(string_t content, char *filename, char *file_size) {
     content_to_read -= 512;
   }
 
-  //Debug: print contents stored in content
-  // write(1, content, size);
-  // write(1, "\n", 1);
   return 0;
 }
 
