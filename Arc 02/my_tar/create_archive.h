@@ -9,3 +9,4 @@ int read_file_contents(string_t content, char *filename, char *file_size);
 Tar_file *build_tar_file(Tar_file *this, char *filename, Tar_file *next, Tar_file *prev);
 Tar_file *load_from_filenames(Tar_file *this, Array *filenames);
 int create_archive(Tar_file *files, char *tar_filename);
+char *get_file_size(char *filename);

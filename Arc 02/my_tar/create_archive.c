@@ -46,6 +46,15 @@ int read_file_contents(string_t content, char *filename, char *file_size) {
   return 0;
 }
 
+char *get_file_size(char *filename) {
+  char *file_size;
+  tar_header_ptr file_header = malloc(sizeof(tar_header_t));
+  create_header(file_header, filename);
+  file_size = strdup(file_header->size);
+  free(file_header);
+  return file_size;
+}
+
 //Build one doubly linked list Tar_file node
 Tar_file *build_tar_file(Tar_file *this, char *filename, Tar_file *next, Tar_file *prev) {
   this = create_tar_file();

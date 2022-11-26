@@ -29,7 +29,7 @@ Tar_archive* read_archive(string_t filename) {
       print_message(STDOUT_FILENO, "my_tar: Error block reading: '");
       print_message(STDOUT_FILENO, filename);
       print_message(STDOUT_FILENO, "'\n");
-      Tar_archive__free(tar_archive);
+      free(tar_archive);
       close(file_descriptor);
       return NULL;
     }
