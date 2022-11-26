@@ -35,8 +35,25 @@ int append_archive(char *tar_filename, Array *filenames) {
 
   //Add new entries to the Tar_file linked list and create a new archive
   else if(filenames->items != NULL && in_directory(tar_filename) == 0) {
+    Tar_file *last_file = NULL;
     Tar_archive *tar_archive = read_archive(tar_filename);
-    
+    Tar_file *current_file = tar_archive->first_file;
+    Tar_file *new_entries = NULL;
+    new_entries = load_from_filenames(new_entries, filenames);
+
+    //Point to the last file in the tar archive
+    while(current_file) {
+      last_file = current_file;
+      current_file = current_file->next_file;
+    }
+
+    new_entries->prev_file = last_file;    
+    last_file->next_file = new_entries;
+    create_archive(tar_archive->first_file, tar_filename);
+    //Debug: Print the contents in the archive
+    // Tar_archive__print_files(tar_archive);
+
+    Tar_archive__free(tar_archive);
   }
 
   return 0;
