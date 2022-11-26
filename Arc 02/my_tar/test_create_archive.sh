@@ -1,3 +1,4 @@
+#!/bin/bash
 #Summary of test cases:
 # 1. 3 regular files; tar file size = 10240 bytes
 # 2. 4 regular files; tar file size = 20480 bytes
