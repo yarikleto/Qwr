@@ -37,3 +37,5 @@ int check_dir(char *directory);
 //free dirent_array
 void free_dirent_array(dirent_array *dirents);
 
+//Check if filename is in the current directory
+int in_directory(char *filename);

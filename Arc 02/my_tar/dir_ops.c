@@ -141,3 +141,18 @@ void free_dirent_array(dirent_array *dirents) {
   free(dirents->array);
   free(dirents);
 }
+
+//Check if filename is in the current directory
+int in_directory(char *filename) {
+  DIR *folder = opendir(".");
+  struct dirent *entry;
+
+  while((entry = readdir(folder)) != NULL) {
+    if(strcmp(entry->d_name, filename) == 0) {
+      closedir(folder);
+      return 0;
+    }
+  }
+  closedir(folder);
+  return 1;
+}
