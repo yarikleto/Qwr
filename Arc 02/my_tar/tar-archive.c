@@ -29,6 +29,7 @@ Tar_archive* read_archive(string_t filename) {
       print_message(STDOUT_FILENO, "my_tar: Error block reading: '");
       print_message(STDOUT_FILENO, filename);
       print_message(STDOUT_FILENO, "'\n");
+      Tar_archive__free(tar_archive);
       close(file_descriptor);
       return NULL;
     }
@@ -58,6 +59,7 @@ Tar_archive* read_archive(string_t filename) {
         print_message(STDOUT_FILENO, filename);
         print_message(STDOUT_FILENO, "'\n");
         close(file_descriptor);
+        Tar_archive__free(tar_archive);
         return NULL;
       }
 
@@ -67,6 +69,7 @@ Tar_archive* read_archive(string_t filename) {
       if (Tar_file__push_content(active_file, block, block_content_size) > 0) {
         print_message(STDOUT_FILENO, "my_tar: Unable to push content\n");
         close(file_descriptor);
+        Tar_archive__free(tar_archive);
         return NULL;
       }
     }
