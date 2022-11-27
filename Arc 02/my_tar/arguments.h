@@ -39,3 +39,5 @@ typedef struct {
 arguments_t* parse_arguments(int argc, string_t* argv);
 void free_arguments(arguments_t* arguments);
 int validate_arguments(arguments_t* arguments, int argc);
+int validate_filestat(Array *included_files);
+void cannot_stat_message(string_t output_file_flag);

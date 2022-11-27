@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "./helpers.h"
 #include "./tar-file.h"
@@ -133,4 +134,105 @@ string_t get_str_slice(string_t str, int from, int to) {
   }
 
   return new_str;
+}
+
+char *reverse_string(char *input_string) {
+  char *head = input_string;
+  char *end = input_string + strlen(input_string) - 1;
+  char temp;
+
+  while(head < end) {
+    temp = *head;
+    *head = *end;
+    *end = temp;
+
+    head++;
+    end--;
+  }
+  return input_string;
+}
+
+char *octal_string(long int n, int string_size) {
+  int i = 0;
+  int remainder;
+  int num_zeros;
+  char *octal_string = malloc(string_size * sizeof(char));
+  char *octal = malloc(20 * sizeof(char));
+  //Add each octal digit to the octal String. NOTE: the string will be backwards and needs to be reversed.
+  while(n != 0) {
+    remainder = n % 8;
+    octal[i] = remainder + '0';
+    n = n / 8; 
+    i++;
+  }
+  octal[i] = '\0';
+  reverse_string(octal);
+  num_zeros = (string_size - 1) - strlen(octal);
+
+  for(int i = 0; i < num_zeros; i++) {
+    octal_string[i] = '0';
+  }
+  octal_string[num_zeros] = '\0';
+  strcat(octal_string, octal);
+  free(octal);
+  return octal_string;
+}
+
+int get_int_len(int n) {
+  int int_len = 1;
+
+  if(n < 0) {
+    n = -n;
+  }
+  while(n > 9) {
+    int_len++;
+    n = n / 10;
+  }
+  return int_len;
+}
+
+int oct_2_dec(int octal) {
+  int n_len = get_int_len(octal);
+  int dec = 0;
+
+  for(int i = 0; i < n_len; i++) {
+    dec += (octal % 10) * my_pow(8, i);
+    octal = octal / 10;
+  }
+  return dec;
+}
+
+int my_recursive_pow(int base, int power) {
+  int ans;
+  if(power == 0) {
+    return 1;
+  }
+
+  if(power == 1) {
+    ans = base;
+  }
+  else {
+    ans = base * my_recursive_pow(base, power - 1);
+  }
+  return ans;
+}
+
+int my_atoi(char *param_1) {
+  int integer = 0;
+  int sign = 1;
+  int int_len = strlen(param_1) - 1;
+
+  while(*param_1) {
+    if(*param_1 == '-') {
+      sign *= -1;
+      param_1++;
+      int_len--;
+    }
+    else {
+      integer += (*param_1 - '0') * my_recursive_pow(10, int_len);
+      param_1++;
+      int_len--;
+    }
+  }
+  return integer * sign;
 }

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <sys/stat.h>
 
 #include "./arguments.h"
 #include "./helpers.h"
@@ -66,6 +67,8 @@ arguments_t* parse_arguments(int argc, char** argv) {
         if (arg_value[i + 1] != '\0' || !argv[arg_index + 1]) {
           arguments->output_file_flag = malloc(sizeof(char) * 1);
           arguments->output_file_flag[0] = '\0';
+          print_message(STDOUT_FILENO, "flag == f if statement\n");
+          print_message(STDOUT_FILENO, arguments->output_file_flag);
           return arguments;
         }
         arguments->output_file_flag = argv[arg_index + 1];
@@ -111,6 +114,7 @@ int validate_arguments(arguments_t* arguments, int argc) {
   if (arguments->output_file_flag != NULL && get_str_length(arguments->output_file_flag) == 0) {
     print_message(STDERR_FILENO, "tar: Option -f requires an argument\n");
     print_usage_message();
+    free(arguments->output_file_flag);
     return 1;
   }
 
@@ -169,15 +173,55 @@ int validate_arguments(arguments_t* arguments, int argc) {
     }
   }
 
+  if (arguments->append_flag && !arguments->output_file_flag) {
+    print_message(STDERR_FILENO, "tar: Option -r also requires -f option\n");
+    free(arguments->output_file_flag);
+    return 1;
+  }
+
+  if (arguments->update_flag && !arguments->output_file_flag) {
+    print_message(STDERR_FILENO, "tar: Option -r also requires -f option\n");
+    free(arguments->output_file_flag);
+    return 1;
+  }
+
   if (arguments->list_flag && !arguments->output_file_flag) {
     print_message(STDERR_FILENO, "tar: Option -t also requires -f option\n");
+    free(arguments->output_file_flag);
     return 1;
   }
 
   if (arguments->extract_flag && !arguments->output_file_flag) {
     print_message(STDERR_FILENO, "tar: Option -x also requires -f option\n");
+    free(arguments->output_file_flag);
     return 1;
   }
 
   return 0;
+}
+
+int validate_filestat(Array *included_files) {
+  int index = 0;
+  int valid_stat_flag;
+  struct stat test_stat;
+  while(index < included_files->size) {
+    if(lstat(included_files->items[index], &test_stat) == -1) {
+      cannot_stat_message(included_files->items[index]);
+      valid_stat_flag = 1;
+    }
+    index++;
+  }
+  if(valid_stat_flag == 1) {
+    print_message(STDOUT_FILENO, "my_tar: Exiting with failure status due to previous errors\n");
+    return 1;
+  }
+  else {
+    return 0;
+  }
+}
+
+void cannot_stat_message(string_t output_file_flag) {
+  print_message(STDOUT_FILENO, "my_tar: ");
+  print_message(STDOUT_FILENO, output_file_flag);
+  print_message(STDOUT_FILENO, ": Cannot stat: No such file or directory\n");
 }

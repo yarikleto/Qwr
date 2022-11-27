@@ -8,20 +8,13 @@
 #include "./tar-archive.h"
 #include "./tar-file.h"
 
-// struct stat filestat;
-  // if (fstat(file_descriptor, &filestat) < 0) {
-  //   print_message(STDOUT_FILENO, "tar: '");
-  //   print_message(STDOUT_FILENO, path);
-  //   print_message(STDOUT_FILENO, "' : Cannot stat\n");
-  //   return 1;
-  // }
-
 Tar_archive* read_archive(string_t filename) {
   int file_descriptor = open(filename, O_RDONLY);
   if (file_descriptor < 0) {
-    print_message(STDOUT_FILENO, "my_tar: Error opening archive: Failed to open '");
+    print_message(STDOUT_FILENO, "my_tar: ");
     print_message(STDOUT_FILENO, filename);
-    print_message(STDOUT_FILENO, "'\n");
+    print_message(STDOUT_FILENO, ": Cannot open: No such file or directory\n");
+    print_message(STDOUT_FILENO, "my_tar: Error is not recoverable: exiting now\n");
     return NULL;
   }
 
@@ -36,6 +29,7 @@ Tar_archive* read_archive(string_t filename) {
       print_message(STDOUT_FILENO, "my_tar: Error block reading: '");
       print_message(STDOUT_FILENO, filename);
       print_message(STDOUT_FILENO, "'\n");
+      free(tar_archive);
       close(file_descriptor);
       return NULL;
     }
@@ -65,6 +59,7 @@ Tar_archive* read_archive(string_t filename) {
         print_message(STDOUT_FILENO, filename);
         print_message(STDOUT_FILENO, "'\n");
         close(file_descriptor);
+        Tar_archive__free(tar_archive);
         return NULL;
       }
 
@@ -74,6 +69,7 @@ Tar_archive* read_archive(string_t filename) {
       if (Tar_file__push_content(active_file, block, block_content_size) > 0) {
         print_message(STDOUT_FILENO, "my_tar: Unable to push content\n");
         close(file_descriptor);
+        Tar_archive__free(tar_archive);
         return NULL;
       }
     }
