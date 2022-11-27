@@ -45,3 +45,4 @@ int fill_tar_header(tar_header_ptr tar_file_header, file_info f_info);
 Tar_file* create_tar_file();
 void Tar_file__free(Tar_file* self);
 int Tar_file__push_content(Tar_file* this, string_t content, int content_size);
+int Tar_file__in_archive(Tar_file *this, char *filename);

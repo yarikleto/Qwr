@@ -95,6 +95,17 @@ int Tar_file__get_file_type(Tar_file* this) {
   return this->header.typeflag - '0';
 }
 
+//Find archive member in the archive; return 0 if found; 1 otherwise
+int Tar_file__in_archive(Tar_file *this, char *filename) {
+  for(Tar_file *current_file = this; current_file != NULL;
+      current_file = current_file->next_file) {
+    if(strcmp(filename, current_file->header.name) == 0) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
 //main function for testing above functions
 // int main(int argc, char **argv) {
 //   Tar_file *t_file = create_tar_file();
@@ -103,27 +114,9 @@ int Tar_file__get_file_type(Tar_file* this) {
 //   file_1 = get_file_info(file_1, argv[1]);
 //   fill_tar_header(&t_file->header, file_1);
 
-//   FILE *file_ptr = fopen("tar-test2.txt", "w");
-//   fwrite(&t_file->header, 1, BLOCK_SIZE, file_ptr);
-//   fclose(file_ptr);
-//   printf("Entry Name: %s\n", t_file->header.name);
-//   printf("file mode: %s\n", t_file->header.mode);
-//   printf("uid: %s\n", t_file->header.uid);
-//   printf("gid: %s\n", t_file->header.gid);
-//   printf("size: %s\n", t_file->header.size);
-//   printf("modification time: %s\n", t_file->header.mtime);
-//   printf("Checksum: %s\n", t_file->header.chksum);
-//   printf("Typeflag: %c\n", t_file->header.typeflag);
-//   printf("Link Name: %s\n", t_file->header.linkname);
-//   printf("magic: %s\n", t_file->header.magic);
-//   printf("version: %s\n", t_file->header.version);
-//   printf("User name: %s\n", t_file->header.uname);
-//   printf("Group name: %s\n", t_file->header.gname);
-//   printf("Checksum: %s|\n", t_file->header.chksum);
-//   printf("major: %s\n", t_file->header.devmajor);
-//   printf("minor: %s\n", t_file->header.devminor);
-//   printf("prefix: %s\n", t_file->header.prefix);
-
+//   if(Tar_file__in_archive(t_file, "test-3.txt") == 0) {
+//     printf("test-3.txt is in the archive");
+//   }
 //   t_file_destructor(file_1);
 //   Tar_file__free(t_file);
   
