@@ -16,7 +16,7 @@ echo TEST CASE 1 COMPLETE
 echo TEST CASE 2: tar -rf [non-existent file] [non-existent file]
 rm append_test.tar
 rm my_append_test.tar
-tar -rf my_append_test_test.tar fffffff.txt
+tar -rf my_append_test.tar fffffff.txt
 ./my_tar -rf my_append_test.tar fffffff.txt
 echo TEST CASE 2 COMPLETE
 
