@@ -83,7 +83,7 @@ int oct_str_to_bytes(string_t str, int size) {
   while (size > 1) {
     size -= 1;
     n *= 8;
-    n += *c - '0';
+    n += *c - '0' < 0 ? 0 : *c - '0';
     c++;
   }
 
@@ -92,6 +92,7 @@ int oct_str_to_bytes(string_t str, int size) {
 
 string_t concat_strings(string_t str1, string_t str2, int str2_length) {
   int str1_length = get_str_length(str1);
+  str2_length = str2_length == -1 ? get_str_length(str2) : str2_length;
   int new_length = str1_length + str2_length;
 
   string_t new_str = malloc(sizeof(char) * (new_length + 1));
@@ -133,4 +134,13 @@ string_t get_str_slice(string_t str, int from, int to) {
   }
 
   return new_str;
+}
+
+void print_block(void* data, int length, char null_char) {
+  for (int i = 0; i < length; ++i) {
+    char c = ((char*)data)[i];
+    c = c == 0 ? null_char : c;
+    write(STDERR_FILENO, &c, 1);
+  }
+  print_message(STDOUT_FILENO, "\n");
 }

@@ -8,13 +8,12 @@
 #include "./tar-archive.h"
 #include "./tar-file.h"
 
-// struct stat filestat;
-  // if (fstat(file_descriptor, &filestat) < 0) {
-  //   print_message(STDOUT_FILENO, "tar: '");
-  //   print_message(STDOUT_FILENO, path);
-  //   print_message(STDOUT_FILENO, "' : Cannot stat\n");
-  //   return 1;
-  // }
+Tar_archive* create_archive() {
+  Tar_archive* tar_archive = malloc(sizeof(Tar_archive));
+  tar_archive->first_file = NULL;
+
+  return tar_archive;
+}
 
 Tar_archive* read_archive(string_t filename) {
   int file_descriptor = open(filename, O_RDONLY);
@@ -25,7 +24,7 @@ Tar_archive* read_archive(string_t filename) {
     return NULL;
   }
 
-  Tar_archive* tar_archive = malloc(sizeof(Tar_archive));
+  Tar_archive* tar_archive = create_archive();
   int empty_block_amount = 0;
   Tar_file* active_file = NULL;
 
@@ -92,7 +91,7 @@ void Tar_archive__print_files(Tar_archive* this) {
   }
 }
 
-int Tar_archive__save(Tar_archive* this, int file_descriptor) {
+void Tar_archive__save(Tar_archive* this, int file_descriptor) {
   Tar_file* file = this->first_file;
   char empty_block[BLOCK_SIZE] = {0};
 
@@ -120,8 +119,6 @@ int Tar_archive__save(Tar_archive* this, int file_descriptor) {
 
   write(file_descriptor, empty_block, BLOCK_SIZE);
   write(file_descriptor, empty_block, BLOCK_SIZE);
-
-  return 0;
 }
 
 void Tar_archive__free(Tar_archive* this) {

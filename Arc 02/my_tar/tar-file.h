@@ -1,5 +1,6 @@
 #define BLOCK_SIZE 512
 #define SIZE_OF_FIELD_SIZE 12
+#define SIZE_OF_FIELD_NAME 100
 
 /* Values used in typeflag field.  */
 #define REGTYPE  '0'            /* regular file */
@@ -16,7 +17,7 @@
 #define TAR_HEADER_T
 typedef union {
   struct {        /* byte offset */
-    char name[100];               /*   0 */
+    char name[SIZE_OF_FIELD_NAME];               /*   0 */
     char mode[8];                 /* 100 */
     char uid[8];                  /* 108 */
     char gid[8];                  /* 116 */

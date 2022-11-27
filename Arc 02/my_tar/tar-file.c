@@ -7,6 +7,8 @@
 
 Tar_file* create_tar_file() {
   Tar_file* tar_file = malloc(sizeof(Tar_file));
+  for (int i = 0; i < BLOCK_SIZE; ++i) ((char*)tar_file)[i] = 0;
+
   tar_file->content = NULL;
   tar_file->next_file = NULL;
   tar_file->prev_file = NULL;

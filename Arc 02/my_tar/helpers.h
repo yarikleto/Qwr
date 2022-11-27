@@ -19,3 +19,4 @@ int my_pow(int n, int power);
 string_t concat_strings(string_t str1, string_t str2, int str2_length);
 void memory_copy(void* dest, void* src, int size);
 string_t get_str_slice(string_t str, int from, int to);
+void print_block(void* data, int length, char null_char);
