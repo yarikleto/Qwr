@@ -42,12 +42,16 @@ echo DIFF APPEND_TEST AND MY_APPEND_TEST
 diff append_test.tar my_append_test.tar
 echo TEST CASE 4 COMPLETE
 
-#5. tar -rf [existing non-tar file]
-echo TEST CASE 5: tar -rf [existing non-tar file]
+#5. tar -rf [existing tar file]
+echo TEST CASE 5: tar -rf [existing tar file]
 rm append_test.tar
 rm my_append_test.tar
+tar -cf append_test.tar array.c
+tar -cf my_append_test.tar array.c
 tar -rf append_test.tar
 ./my_tar -rf my_append_test.tar
 echo DIFF APPEND_TEST AND MY_APPEND_TEST
 diff append_test.tar my_append_test.tar
 echo TEST CASE 5 COMPLETE
+
+
