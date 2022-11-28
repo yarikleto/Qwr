@@ -7,7 +7,15 @@
 #include "./create_archive.h"
 #include "./dir_ops.h"
 
-int append_archive(char *tar_filename, Array *filenames) {
+int update_archive(char *tar_filename, Array *filenames) {
+  Array *single_filename = create_array();
+  single_filename->size = 1;
+  Tar_archive *tar_archive = read_archive(tar_filename);
+  
+  return 0;
+}
+
+int append_archive(char *tar_filename, Array *filenames, bool update_flag) {
   int file_descriptor;
   
   if(validate_filestat(filenames) > 0) {
@@ -82,15 +90,6 @@ int append_archive(char *tar_filename, Array *filenames) {
       Tar_archive__free(tar_archive);
     }
   }
-  
-  return 0;
-}
-
-int update_archive(char *tar_filename, Array *filenames) {
-  
-  //DELETE LATER
-  tar_filename[0] = tar_filename[0];
-  filenames->items[0] = filenames->items[0];
   
   return 0;
 }

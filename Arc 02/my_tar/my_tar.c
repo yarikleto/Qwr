@@ -42,15 +42,12 @@ int main (int argc, char** argv) {
     Tar_archive__free(tar_archive);
   }
 
-  //Tar mode: -r Append new entries to the archive
-  if (arguments->append_flag) {
-    append_archive(arguments->output_file_flag, arguments->included_files);
-  }
-
-  //Tar mode: -u Append new entry only if it is newer than its 
-  //corresponding archive member of the same name
-  if (arguments->update_flag) {
-    update_archive(arguments->output_file_flag, arguments->included_files);
+  //Tar mode: -r and -u
+  //Append new entries to the archive. When update_flag is true, append new 
+  //entry only if it is newer than its corresponding archive member
+  if (arguments->append_flag || arguments->update_flag) {
+    append_archive(arguments->output_file_flag, 
+                  arguments->included_files, arguments->update_flag);
   }
 
   //Tar mode: -x extract file from the archive
