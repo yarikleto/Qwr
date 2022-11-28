@@ -7,7 +7,7 @@
 #include "./create_archive.h"
 #include "./dir_ops.h"
 
-int append_archive(char *tar_filename, Array *filenames) {
+int append_archive(char *tar_filename, Array *filenames, bool update_flag) {
   int file_descriptor;
   
   if(validate_filestat(filenames) > 0) {
@@ -40,7 +40,30 @@ int append_archive(char *tar_filename, Array *filenames) {
     Tar_file *current_file = tar_archive->first_file;
     Tar_file *new_entries = NULL;
     new_entries = load_from_filenames(new_entries, filenames);
+    Tar_file *new_entries_head = new_entries;
+    Tar_file *current_file_head = current_file;
+    Tar_file *temp_tar_file_ptr = NULL;
 
+    //If -u is true,remove new entries if it is not newer than the archive entry
+    if(update_flag == true) {
+      while(new_entries) {
+        while(current_file) {
+          if(strcmp(current_file->header.name, new_entries->header.name) == 0
+            && current_file->header.mtime >= new_entries->header.mtime) {
+            temp_tar_file_ptr = new_entries;
+            new_entries->next_file->prev_file = new_entries->prev_file;
+            new_entries->prev_file->next_file = new_entries->next_file;
+            new_entries = new_entries->next_file;
+            Tar_file__free(temp_tar_file_ptr);
+          }
+          current_file = current_file->next_file;
+        }
+        new_entries = new_entries->next_file;
+      }
+      new_entries = new_entries_head;
+      current_file = current_file_head;
+    }
+    
     //Point to the last file in the tar archive
     while(current_file) {
       last_file = current_file;
@@ -82,15 +105,6 @@ int append_archive(char *tar_filename, Array *filenames) {
       Tar_archive__free(tar_archive);
     }
   }
-  
-  return 0;
-}
-
-int update_archive(char *tar_filename, Array *filenames) {
-  
-  //DELETE LATER
-  tar_filename[0] = tar_filename[0];
-  filenames->items[0] = filenames->items[0];
   
   return 0;
 }
