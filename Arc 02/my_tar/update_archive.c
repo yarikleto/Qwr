@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "./arguments.h"
 #include "./create_archive.h"
 #include "./dir_ops.h"
 
@@ -11,6 +12,13 @@ int append_archive(char *tar_filename, Array *filenames, bool update_flag) {
   int file_descriptor;
   
   if(validate_filestat(filenames) > 0) {
+    return 1;
+  }
+  if(is_directory(tar_filename) > 0) {
+    print_message(STDERR_FILENO, "my_tar: ");
+    print_message(STDERR_FILENO, tar_filename);
+    print_message(STDERR_FILENO, ": Cannot read: Bad file descriptor\n");
+    print_message(STDERR_FILENO, "my_tar: Error is not recoverable: exiting now\n");
     return 1;
   }
 
