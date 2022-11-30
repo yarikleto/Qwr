@@ -29,7 +29,7 @@ Tar_archive* read_archive(string_t filename) {
       print_message(STDOUT_FILENO, "my_tar: Error block reading: '");
       print_message(STDOUT_FILENO, filename);
       print_message(STDOUT_FILENO, "'\n");
-      free(tar_archive);
+      Tar_archive__free(tar_archive);
       close(file_descriptor);
       return NULL;
     }
@@ -55,9 +55,9 @@ Tar_archive* read_archive(string_t filename) {
 
     while (loaded_size_in_bytes < content_size_in_bytes) {
       if (read(file_descriptor, block, BLOCK_SIZE) < BLOCK_SIZE) {
-        print_message(STDOUT_FILENO, "my_tar: Error content reading: '");
-        print_message(STDOUT_FILENO, filename);
-        print_message(STDOUT_FILENO, "'\n");
+        // print_message(STDOUT_FILENO, "my_tar: Error content reading: '");
+        // print_message(STDOUT_FILENO, filename);
+        // print_message(STDOUT_FILENO, "'\n");
         close(file_descriptor);
         Tar_archive__free(tar_archive);
         return NULL;

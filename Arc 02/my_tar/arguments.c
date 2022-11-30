@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
@@ -218,6 +219,15 @@ int validate_filestat(Array *included_files) {
   else {
     return 0;
   }
+}
+
+int is_directory(char *tar_filename) {
+  struct stat filestat;
+  lstat(tar_filename, &filestat);
+  if(S_ISDIR(filestat.st_mode)){
+    return 1;
+  }
+  return 0;
 }
 
 void cannot_stat_message(string_t output_file_flag) {
