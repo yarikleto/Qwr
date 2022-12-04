@@ -7,36 +7,116 @@
 #include <errno.h>
 #include <utime.h>
 
-int extract_archive() {
+#include "tar-archive.h"
+#include "array.h"
+#include "dir_ops.h"
+
+int extract_file(Tar_file *archive_member) {
+  unlink(archive_member->header.name);
+  int mode = oct_2_dec(my_atoi(archive_member->header.mode));
+  struct utimbuf timebuf;
+  timebuf.modtime = long_oct_2_dec(my_atol(archive_member->header.mtime));
+  timebuf.actime = timebuf.modtime;
+  int file_descriptor = open(archive_member->header.name, O_RDWR | O_CREAT, mode);
+  write(file_descriptor, archive_member->content, 
+        oct_2_dec(my_atoi(archive_member->header.size)));
+  utime(archive_member->header.name, &timebuf);
+  close(file_descriptor);
   return 0;
 }
 
-//main function for testing the above functions
-int main() {
-  char *new_dir = "new_folder";
-  char *new_file = "new_file";
-  int file_descriptor;
-  int mkdir_result;
-  struct stat filestat;
-  struct utimbuf timebuf;
+Tar_file *extract_directory_contents(Tar_file *archive_dir) {
+  char *archive_dir_name = strdup(archive_dir->header.name);
+  archive_dir_name = add_forward_slash(archive_dir_name);
+  int mode = oct_2_dec(my_atoi(archive_dir->header.mode));
 
-  timebuf.actime = 0;
-  timebuf.modtime = 0;
+  if(in_directory(archive_dir_name) > 0) {
+    mkdir(archive_dir_name, mode);
+  }
+  
+  Tar_file *current_file = archive_dir->next_file;
+  for(;current_file != NULL && 
+      strncmp(current_file->header.name, archive_dir_name, strlen(archive_dir_name)) == 0;
+      current_file = current_file->next_file) {
+    
+    if(current_file->header.typeflag == DIRTYPE) {
+      mode = oct_2_dec(my_atoi(current_file->header.mode));
+      mkdir(current_file->header.name, mode);
+      struct utimbuf dir_timebuf;
+      dir_timebuf.modtime = long_oct_2_dec(my_atol(current_file->header.mtime));
+      dir_timebuf.actime = dir_timebuf.modtime;
+      utime(current_file->header.name, &dir_timebuf);
+    }
+    else {
+      extract_file(current_file);
+    }
+  }
 
-  //Create a new file with mode 755
-  file_descriptor = open(new_file, (S_IRWXU | (S_IRGRP | S_IXGRP) | (S_IROTH | S_IXOTH)));
-  close(file_descriptor);
+  free(archive_dir_name);
+  return archive_dir->next_file;
+}
 
-  lstat(new_file, &filestat);
-  printf("new_file mtime and actime: %lu %lu\n", filestat.st_mtim.tv_sec, filestat.st_atim.tv_sec);
+int extract_archive(char *tar_filename, Array *filenames) {
+  Tar_archive* tar_archive = read_archive(tar_filename);
+  
+  if (tar_archive == NULL) {
+    return 1;
+  }
 
-  utime(new_file, &timebuf);
-  lstat(new_file, &filestat);
-  printf("new_file mtime and actime: %lu %lu\n", filestat.st_mtim.tv_sec, filestat.st_atim.tv_sec);
+  //Extract all archive members
+  if(filenames->size == 0) {
+    for(Tar_file *current_file = tar_archive->first_file; current_file != NULL; 
+        current_file = current_file->next_file) {
+      if(current_file->header.typeflag == REGTYPE || current_file->header.typeflag == SYMTYPE) {
+        extract_file(current_file);
+      }
+      else if(current_file->header.typeflag == DIRTYPE) {
+        extract_directory_contents(current_file);
+      }
+    }
+    Tar_archive__free(tar_archive);
+    return 0;
+  }
 
+  //Extract the specified files or directories
+  else {
+    for(int i = 0; i < filenames->size; i++) {
+      for(Tar_file *current_file = tar_archive->first_file; current_file != NULL; 
+          current_file = current_file->next_file) {
+        int file_in_archive = strncmp(current_file->header.name, 
+                                      filenames->items[i], 
+                                      strlen(current_file->header.name));
 
-  //Create a new directory with mode 755
-  // mkdir_result = mkdir(new_dir, S_IRWXU | (S_IRGRP | S_IXGRP) | (S_IROTH | S_IXOTH));
+        printf("current_file: %s\n", current_file->header.name);
+        printf("current filename: %s\n", filenames->items[i]);
+        printf("file_in_archive: %d\n", file_in_archive);
+        //Extract a single regular file
+        if(file_in_archive == 0 && current_file->header.typeflag == REGTYPE) {
+          printf("Extract file code entered here\n");
+          extract_file(current_file);
+          break;
+        }
+        //Extract directory and its contents
+        else if(file_in_archive == 0 && current_file->header.typeflag == DIRTYPE) {
+          printf("A directory is found\n");
+          current_file = extract_directory_contents(current_file);
+          break;
+        }
 
+        else if(current_file->next_file != NULL) {
+          continue;
+        }
+
+        else {
+          print_message(STDERR_FILENO, "my_tar: ");
+          print_message(STDERR_FILENO, filenames->items[i]);
+          print_message(STDERR_FILENO, ": Not found in archive\n");
+          print_message(STDERR_FILENO, 
+                  "my_tar: Exiting with failure status due to previous errors\n");
+        }
+      }
+    }
+  }
+  Tar_archive__free(tar_archive);
   return 0;
 }

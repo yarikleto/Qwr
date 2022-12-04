@@ -39,3 +39,6 @@ void free_dirent_array(dirent_array *dirents);
 
 //Check if filename is in the current directory
 int in_directory(char *filename);
+
+//Add forward slash in front of directory filepath
+char *add_forward_slash(char *file_path);
