@@ -87,18 +87,13 @@ int extract_archive(char *tar_filename, Array *filenames) {
                                       filenames->items[i], 
                                       strlen(current_file->header.name));
 
-        printf("current_file: %s\n", current_file->header.name);
-        printf("current filename: %s\n", filenames->items[i]);
-        printf("file_in_archive: %d\n", file_in_archive);
         //Extract a single regular file
         if(file_in_archive == 0 && current_file->header.typeflag == REGTYPE) {
-          printf("Extract file code entered here\n");
           extract_file(current_file);
           break;
         }
         //Extract directory and its contents
         else if(file_in_archive == 0 && current_file->header.typeflag == DIRTYPE) {
-          printf("A directory is found\n");
           current_file = extract_directory_contents(current_file);
           break;
         }
