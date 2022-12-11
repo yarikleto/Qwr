@@ -29,6 +29,10 @@ Tar_file *extract_directory_contents(Tar_file *archive_dir) {
   char *archive_dir_name = strdup(archive_dir->header.name);
   archive_dir_name = add_forward_slash(archive_dir_name);
   int mode = oct_2_dec(my_atoi(archive_dir->header.mode));
+  struct utimbuf dir_timebuf;
+  struct utimbuf subdir_timebuf;
+  dir_timebuf.modtime = long_oct_2_dec(my_atol(archive_dir->header.mtime));
+  dir_timebuf.actime = dir_timebuf.modtime;
 
   if(in_directory(archive_dir_name) > 0) {
     mkdir(archive_dir_name, mode);
@@ -42,10 +46,9 @@ Tar_file *extract_directory_contents(Tar_file *archive_dir) {
     if(current_file->header.typeflag == DIRTYPE) {
       mode = oct_2_dec(my_atoi(current_file->header.mode));
       mkdir(current_file->header.name, mode);
-      struct utimbuf dir_timebuf;
-      dir_timebuf.modtime = long_oct_2_dec(my_atol(current_file->header.mtime));
-      dir_timebuf.actime = dir_timebuf.modtime;
-      utime(current_file->header.name, &dir_timebuf);
+      subdir_timebuf.modtime = long_oct_2_dec(my_atol(current_file->header.mtime));
+      subdir_timebuf.actime = subdir_timebuf.modtime;
+      utime(current_file->header.name, &subdir_timebuf);
     }
     else {
       extract_file(current_file);
@@ -53,7 +56,7 @@ Tar_file *extract_directory_contents(Tar_file *archive_dir) {
   }
 
   free(archive_dir_name);
-  return archive_dir->next_file;
+  return current_file;
 }
 
 int extract_archive(char *tar_filename, Array *filenames) {
@@ -71,7 +74,10 @@ int extract_archive(char *tar_filename, Array *filenames) {
         extract_file(current_file);
       }
       else if(current_file->header.typeflag == DIRTYPE) {
-        extract_directory_contents(current_file);
+        current_file = extract_directory_contents(current_file);
+        if(current_file == NULL) {
+          break;
+        }
       }
     }
     Tar_archive__free(tar_archive);
