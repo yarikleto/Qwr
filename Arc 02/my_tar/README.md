@@ -3,6 +3,7 @@
 
 ## Task
 The task is to recreate a version of the Tar (Tape Archive) utility (my_tar).
+My_tar's functionalities are mirrored after the GNU tar program.
 
 ## Description
 The Tar utility is used for collecting files (archive members) into an archive 
