@@ -25,7 +25,7 @@ that of its corresponding archive member.
 The executable program is my_tar. The required files are in the Program Dependencies section.
 
 ## Program Dependencies
-![alt text](Dependencies.svg)
+![alt text](./my_tar/Dependencies.svg)
 
 ## Usage
 **-c Create an archive**
