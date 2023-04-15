@@ -154,3 +154,14 @@ int in_directory(char *filename) {
   closedir(folder);
   return 1;
 }
+
+char *add_forward_slash(char *file_path) {
+  int file_path_len = strlen(file_path);
+
+  if(file_path[file_path_len-1] != '/') {
+    file_path = realloc(file_path, file_path_len + 2 * sizeof(char));
+    strcat(file_path, "/");
+    file_path_len++;
+  }
+  return file_path;
+}

@@ -191,6 +191,19 @@ int get_int_len(int n) {
   return int_len;
 }
 
+int get_long_int_len(long int n) {
+  int int_len = 1;
+
+  if(n < 0) {
+    n = -n;
+  }
+  while(n > 9) {
+    int_len++;
+    n = n / 10;
+  }
+  return int_len;
+}
+
 int oct_2_dec(int octal) {
   int n_len = get_int_len(octal);
   int dec = 0;
@@ -202,8 +215,34 @@ int oct_2_dec(int octal) {
   return dec;
 }
 
+long long_oct_2_dec(long int octal) {
+  int n_len = get_long_int_len(octal);
+  long dec = 0;
+
+  for(int i = 0; i < n_len; i++) {
+    dec += (octal % 10) * my_pow(8, i);
+    octal = octal / 10;
+  }
+  return dec;
+}
+
 int my_recursive_pow(int base, int power) {
   int ans;
+  if(power == 0) {
+    return 1;
+  }
+
+  if(power == 1) {
+    ans = base;
+  }
+  else {
+    ans = base * my_recursive_pow(base, power - 1);
+  }
+  return ans;
+}
+
+long my_long_recursive_pow(long base, long power) {
+  long ans;
   if(power == 0) {
     return 1;
   }
@@ -230,6 +269,26 @@ int my_atoi(char *param_1) {
     }
     else {
       integer += (*param_1 - '0') * my_recursive_pow(10, int_len);
+      param_1++;
+      int_len--;
+    }
+  }
+  return integer * sign;
+}
+
+long my_atol(char *param_1) {
+  long integer = 0;
+  long sign = 1;
+  long int_len = strlen(param_1) - 1;
+
+  while(*param_1) {
+    if(*param_1 == '-') {
+      sign *= -1;
+      param_1++;
+      int_len--;
+    }
+    else {
+      integer += (*param_1 - '0') * my_long_recursive_pow(10, int_len);
       param_1++;
       int_len--;
     }

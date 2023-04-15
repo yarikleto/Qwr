@@ -54,4 +54,44 @@ echo DIFF APPEND_TEST AND MY_APPEND_TEST
 diff append_test.tar my_append_test.tar
 echo TEST CASE 5 COMPLETE
 
+#6. tar -rf [existing non-tar file]
+echo TEST CASE 6: tar -rf [existing NON-tar file]
+rm append_test.tar
+rm my_append_test.tar
+tar -rf array.c > append_test.txt
+git restore array.c
+./my_tar -rf array.c > my_append_test.txt
+git restore array.c
+echo DIFF APPEND_TEST AND MY_APPEND_TEST
+diff append_test.txt my_append_test.txt
+echo TEST CASE 6 COMPlETE
+rm append_test.txt
+rm my_append_test.txt
 
+#7. tar -uf [existing tar file] [newer entry]
+echo TEST CASE 7: tar -uf [existing tar file] [newer entry]
+tar -uf test.tar test-3.txt
+cat -e test.tar > append_test.txt
+git restore test.tar
+./my_tar -uf test.tar test-3.txt
+cat -e test.tar > my_append_test.txt
+git restore test.tar
+echo DIFF APPEND_TEST AND MY_APPEND_TEST
+diff append_test.txt my_append_test.txt
+echo TEST CASE 7 COMPLETE
+rm append_test.txt
+rm my_append_test.txt
+
+#8. tar -uf [existing tar file] [newer entry] [same newer entry]
+echo TEST CASE 8: tar -uf [existing tar file] [newer entry] [same newer entry]
+tar -uf test.tar test-3.txt test-3.txt
+cat test.tar > append_test.txt
+git restore test.tar
+./my_tar -uf test.tar test-3.txt test-3.txt
+cat test.tar > my_append_test.txt
+git restore test.tar
+echo DIFF APPEND_TEST AND MY_APPEND_TEST
+diff append_test.txt my_append_test.txt
+echo TEST CASE 8 COMPLETE
+# rm append_test.txt
+# rm my_append_test.txt

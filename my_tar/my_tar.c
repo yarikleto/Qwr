@@ -9,6 +9,7 @@
 #include "./tar-file.h"
 #include "./create_archive.h"
 #include "./update_archive.h"
+#include "./extract_archive.h"
 
 int main (int argc, char** argv) {
   arguments_t* arguments = parse_arguments(argc, argv);
@@ -42,42 +43,17 @@ int main (int argc, char** argv) {
     Tar_archive__free(tar_archive);
   }
 
-  //Tar mode: -r Append new entries to the archive
-  if (arguments->append_flag) {
-    append_archive(arguments->output_file_flag, arguments->included_files);
-  }
-
-  //Tar mode: -u Append new entry only if it is newer than its 
-  //corresponding archive member of the same name
-  if (arguments->update_flag) {
-    update_archive(arguments->output_file_flag, arguments->included_files);
+  //Tar mode: -r and -u
+  //Append new entries to the archive. When update_flag is true, append new 
+  //entry only if it is newer than its corresponding archive member
+  if (arguments->append_flag || arguments->update_flag) {
+    append_archive(arguments->output_file_flag, 
+                  arguments->included_files, arguments->update_flag);
   }
 
   //Tar mode: -x extract file from the archive
   if (arguments->extract_flag) {
-    Tar_archive* tar_archive = read_archive(arguments->output_file_flag);
-    if (tar_archive == NULL) {
-      return 1;
-    }
-    // !!!! For the debug purpose
-    int file_descriptor = open("saved-debug-archive.tar", O_WRONLY | O_TRUNC | O_CREAT | S_IRWXU);
-    Tar_archive__save(tar_archive, file_descriptor);
-
-    // !!!! For the debug purpose
-    // {
-    //   Tar_file* file = tar_archive->first_file;
-
-    //   while (file) {
-    //     printf("------------------------\n");
-    //     printf("Name: %s\n", file->header.name);
-    //     printf("Size: %d\n", oct_str_to_bytes(file->header.size, SIZE_OF_FIELD_SIZE));
-    //     printf("Content length: %d\n", get_str_length(file->content));
-    //     printf("Type: %d\n", file->header.typeflag);
-    //     printf("Content: %s\n", file->content);
-    //     printf("------------------------\n");
-    //     file = file->next_file;
-    //   }
-    // }
+    extract_archive(arguments->output_file_flag, arguments->included_files);
   }
 
   free_arguments(arguments);
